@@ -1,0 +1,65 @@
+:root {
+  /* Solid Theme */
+  --bg-base: #F3F4F6; /* Solid Cool Grey */
+  --bg-card: #FFFFFF; /* Solid Stark White */
+  --bg-card-hover: #F9FAFB;
+  --bg-glass-border: #E5E7EB; /* Solid Chalk Line */
+  --bg-header: #111827; /* Solid Obsidian */
+  
+  /* Accents */
+  --accent-primary: #059669; /* Emerald */
+  --accent-secondary: #10B981; /* Light Emerald */
+  --accent-primary-glow: rgba(16, 185, 129, 0.2);
+  --accent-progress: #D97706; /* Solid Dark Amber */
+  --accent-purple: #7C3AED; /* Solid Vivid Purple */
+  --accent-terracotta: #B45309; /* Solid Terracotta */
+  
+  /* Semantic Colors */
+  --color-mismatch: #991B1B;
+  --color-inconsistency: #92400E;
+  --color-missing: #075985;
+  --color-unusual: #92400E;
+  
+  /* Typography */
+  --text-heading: #111827; /* Dark Obsidian */
+  --text-primary: #111827; /* Dark Obsidian */
+  --text-secondary: #475569; /* Muted Slate */
+  --text-muted: #475569;
+  --text-header: #F9FAFB;
+
+  /* Sizing */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  
+  /* Shadows */
+  --shadow-card: 0 4px 20px rgba(16, 185, 129, 0.12);
+  --shadow-glow: 0 0 24px var(--accent-primary-glow);
+}
+
+body {
+  background-color: #ECFDF5;
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Mint radial green background */
+  background: radial-gradient(circle at top center, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  background-attachment: fixed;
+}
+
+/* Global Resets */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+button, a {
+  all: unset;
+  box-sizing: border-box;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
