@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinVerify AI - Automated Due Diligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components/typography.css">
+  <link rel="stylesheet" href="css/components/button.css">
+  <link rel="stylesheet" href="css/components/card.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header-nav">
+      <div class="header-logo">
+        <div class="header-logo-icon">F</div>
+        <a href="index.html" class="header-logo-text">FinVerify AI</a>
+      </div>
+      <nav class="header-links" style="align-items: center;">
+        <a href="history.html" class="nav-btn">History</a>
+        <a href="upload.html" class="nav-btn">New Analysis</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero-section">
+        <div class="hero-content">
+          <div class="hero-badge">AI-Powered Financial Due Diligence</div>
+          <h1 class="hero-title">
+            Investors spend 40 hours auditing. <br/>
+            <span class="hero-title-highlight">We do it in 40 seconds.</span>
+          </h1>
+          <p class="hero-description">
+            Don't let mathematical inconsistencies kill your fundraise. FinVerify AI instantly cross-references your Pitch Deck, Financial Models, and Cap Tables to highlight discrepancies before investors see them.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary large" onclick="window.location.href='upload.html'">
+              Start Free Analysis
+            </button>
+            <button class="btn-secondary large" onclick="window.location.href='history.html'">
+              View Past Reports
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="features-section" style="background: rgba(255, 255, 255, 0.4); border-top: 1px solid rgba(16, 185, 129, 0.2);">
+        <div class="main-content">
+          <h2 class="section-title" style="color: var(--text-primary);">The ROI of Automated Diligence</h2>
+          <p class="section-subtitle" style="color: var(--text-secondary);">
+            Stop wasting analyst hours manually hunting for spreadsheet discrepancies. Let our engine cross-reference models instantly.
+          </p>
+          
+          <div class="features-grid">
+            <div class="card feature-card interactive">
+              <div style="background: rgba(16, 185, 129, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <i data-lucide="alert-triangle" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
+              </div>
+              <h3 class="h3" style="margin-bottom: 0.75rem;">The Problem</h3>
+              <p class="text-secondary text-sm" style="line-height: 1.6;">A single metric mismatch between your pitch deck and financial model can destroy investor trust. Manual reconciliation is incredibly slow, error-prone, and expensive.</p>
+            </div>
+            
+            <div class="card feature-card interactive">
+              <div style="background: rgba(16, 185, 129, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <i data-lucide="cpu" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
+              </div>
+              <h3 class="h3" style="margin-bottom: 0.75rem;">Our Solution</h3>
+              <p class="text-secondary text-sm" style="line-height: 1.6;">Our AI engine ingests your entire data room and instantly cross-references all claims. It doesn't just match text—it mathematically verifies every underlying formula.</p>
+            </div>
+            
+            <div class="card feature-card interactive">
+              <div style="background: rgba(16, 185, 129, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <i data-lucide="trending-up" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
+              </div>
+              <h3 class="h3" style="margin-bottom: 0.75rem;">The Impact</h3>
+              <p class="text-secondary text-sm" style="line-height: 1.6;">Reduce 40 hours of manual diligence down to 40 seconds. Avoid costly auditor fees, eliminate post-term-sheet surprises, and close deals faster.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="js/api.js"></script>
+  <script src="js/moneyShower.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
