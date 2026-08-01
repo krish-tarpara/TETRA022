@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinVerify AI - History</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components/typography.css">
+  <link rel="stylesheet" href="css/components/button.css">
+  <link rel="stylesheet" href="css/components/card.css">
+  <link rel="stylesheet" href="css/pages/history.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header-nav">
+      <div class="header-logo">
+        <div class="header-logo-icon">F</div>
+        <a href="index.html" class="header-logo-text">FinVerify AI</a>
+      </div>
+      <nav class="header-links" style="align-items: center;">
+        <a href="history.html" class="nav-btn active">History</a>
+        <a href="upload.html" class="nav-btn">New Analysis</a>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <div>
+        <header class="history-header">
+          <div>
+            <h1 class="h1" style="margin-bottom: 0.5rem;">Your Analysis History</h1>
+            <p class="text-secondary text-sm">Reports shown below are securely linked to your current browser session. <br/>These are not shared globally.</p>
+          </div>
+          <button class="btn-primary large" onclick="window.location.href='upload.html'">
+            <i data-lucide="plus" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i> New Analysis
+          </button>
+        </header>
+
+        <div id="loading-indicator" class="text-secondary text-center" style="padding: 4rem;">
+          <div class="animate-pulse" style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+          Loading your history...
+        </div>
+        <div id="error-indicator" class="text-mismatch text-center card" style="display: none; padding: 2rem;"></div>
+
+        <div id="empty-state" class="card empty-state" style="display: none; background: rgba(0,0,0,0.02);">
+          <i data-lucide="folder-search" style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
+          <h2 class="h2">No analyses yet</h2>
+          <p class="text-secondary" style="max-width: 300px; margin: 0 auto 2rem; line-height: 1.6;">Upload your first set of fundraising documents to generate a comprehensive due diligence report.</p>
+          <button class="btn-primary large" onclick="window.location.href='upload.html'">Run First Audit</button>
+        </div>
+
+        <div id="sessions-grid" class="sessions-grid">
+          <!-- Sessions will be injected here by JS -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>lucide.createIcons();</script>
+  <script src="js/api.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinVerify AI - Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components/typography.css">
+  <link rel="stylesheet" href="css/components/button.css">
+  <link rel="stylesheet" href="css/components/card.css">
+  <link rel="stylesheet" href="css/components/overlay.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header-nav">
+      <div class="header-logo">
+        <div class="header-logo-icon">F</div>
+        <a href="index.html" class="header-logo-text">FinVerify AI</a>
+      </div>
+      <nav class="header-links" style="align-items: center;">
+        <a href="history.html" class="nav-btn">History</a>
+        <a href="upload.html" class="nav-btn">New Analysis</a>
+      </nav>
+    </header>
+
+    <main class="main-content" id="main-content" style="display: none;">
+      <header class="dashboard-header">
+        <div>
+          <h1 class="h1 dashboard-header-title">Fundraising Readiness Report</h1>
+          <p class="text-secondary" id="session-info"></p>
+        </div>
+        <div class="dashboard-header-actions">
+          <button class="btn-secondary" onclick="exportCsv()">
+            <i data-lucide="download" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i> CSV
+          </button>
+          <button class="btn-primary" onclick="exportPdf()">
+            <i data-lucide="file-text" style="width: 16px; height: 16px; margin-right: 0.5rem;"></i> Export PDF
+          </button>
+        </div>
+      </header>
+
+      <!-- AI Summary -->
+      <div class="card summary-card" style="border-top-color: var(--accent-terracotta); background: #FFFFFF;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--bg-glass-border); margin-bottom: 1.5rem; padding-bottom: 1rem;">
+          <div>
+            <h3 class="h3" style="color: var(--accent-primary); margin: 0;">Executive Summary</h3>
+            <p class="text-sm text-secondary" style="margin-top: 0.25rem;">AI-generated contextual overview of your document consistency.</p>
+          </div>
+          <i data-lucide="bot" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
+        </div>
+        <div id="ai-summary" class="markdown-body text-sm" style="line-height: 1.6;"></div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-grid" id="metrics-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="dashboard-main-grid">
+        <div class="flex-col">
+          <!-- Readiness Gauge -->
+          <div class="card text-center" style="position: sticky; top: 100px;">
+            <h3 class="h3" style="margin-bottom: 0.5rem;">Readiness Score</h3>
+            <p class="text-xs text-secondary" style="margin-bottom: 1rem;">Scores >85% are considered ready for investor review.</p>
+            
+            <div class="gauge-container">
+              <!-- Half Circle SVG -->
+              <svg width="200" height="100" viewBox="0 0 200 100">
+                <path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="20" stroke-linecap="round"/>
+                <path id="gauge-path" d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="var(--accent-success)" stroke-width="20" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)" />
+              </svg>
+              <div class="gauge-score-display">
+                <span id="gauge-score" style="font-size: 3.5rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;">0</span>
+              </div>
+            </div>
+            <div id="gauge-status" style="margin-top: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9rem;"></div>
+          </div>
+          
+          <!-- Cross-Document Matrix -->
+          <div class="card" style="margin-top: 1.5rem; position: sticky; top: 350px;">
+            <h3 class="h3" style="margin-bottom: 0.5rem; font-size: 1.1rem;">Cross-Document Matrix</h3>
+            <p class="text-xs text-secondary" style="margin-bottom: 1rem;">Verification paths evaluated.</p>
+            <ul style="font-size: 0.85rem; line-height: 1.8; color: var(--text-secondary);">
+              <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                <span>Pitch Deck ↔ Financial Model</span>
+                <span style="color: var(--accent-primary); font-weight: 600;">94% Match</span>
+              </li>
+              <li style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                <span>Financial Model ↔ Cap Table</span>
+                <span style="color: var(--color-mismatch); font-weight: 600;">68% Match</span>
+              </li>
+              <li style="display: flex; justify-content: space-between;">
+                <span>Pitch Deck ↔ Cap Table</span>
+                <span style="color: var(--accent-progress); font-weight: 600;">82% Match</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flex-col">
+          <!-- Discrepancy Stream -->
+          <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--bg-glass-border);">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--bg-glass-border); background: var(--bg-base);">
+              <h3 class="h3" style="margin: 0;">Discrepancy Stream</h3>
+              <p class="text-sm text-secondary" style="margin-top: 0.25rem;">A chronological timeline of inconsistencies found across your files.</p>
+            </div>
+            <div id="discrepancies-list" class="discrepancy-list" style="padding: 1.5rem;"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- State Overlays -->
+    <div id="overlay-error" class="overlay" style="display: none;">
+      <div class="card text-center" style="max-width: 500px">
+        <i data-lucide="alert-triangle" style="width: 56px; height: 56px; color: var(--color-mismatch); margin: 0 auto 1.5rem;"></i>
+        <h2 class="h2 text-mismatch">Analysis Failed</h2>
+        <p id="error-message" class="text-secondary" style="margin-bottom: 2rem; line-height: 1.6;"></p>
+        <button class="btn-primary w-full large" onclick="window.location.href='upload.html'">Return to Ingestion Hub</button>
+      </div>
+    </div>
+
+    <div id="overlay-processing" class="overlay" style="display: none;">
+      <div class="card text-center" style="width: 450px; padding: 3rem;">
+        <div class="animate-pulse" id="processing-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">⏳</div>
+        <h2 class="h2" style="margin-bottom: 0.5rem; color: var(--text-primary);">Analysis in Progress</h2>
+        <h4 id="processing-stage" class="text-secondary" style="font-size: 1.1rem; margin-bottom: 2rem; font-weight: 500;">Initializing AI Engine</h4>
+        
+        <div class="progress-bar-container" id="progress-container" style="display: none;">
+          <div class="progress-bar-fill" id="progress-bar" style="width: 0%"></div>
+        </div>
+        <p id="progress-text" class="text-sm text-secondary" style="margin-top: 1rem; display: none; font-weight: 500;"></p>
+      </div>
+    </div>
+
+    <!-- Split Verification Modal -->
+    <div id="verification-modal" class="overlay" style="display: none; align-items: center; justify-content: center; z-index: 1000;">
+      <div class="card" style="width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 2.5rem; position: relative;">
+        <button onclick="document.getElementById('verification-modal').style.display='none'" style="position: absolute; top: 1.5rem; right: 1.5rem; cursor: pointer; color: var(--text-secondary);">
+          <i data-lucide="x" style="width: 24px; height: 24px;"></i>
+        </button>
+        
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+          <i data-lucide="split-square-horizontal" style="color: var(--accent-primary); width: 28px; height: 28px;"></i>
+          <h2 class="h2" style="margin: 0;" id="modal-title">Verification Deep Dive</h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+          <!-- Left Snippet -->
+          <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-sm); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">
+              <span id="modal-doc1-name">Source Document 1</span>
+              <span id="modal-doc1-page" style="color: var(--accent-primary);">Page --</span>
+            </div>
+            <blockquote id="modal-doc1-quote" style="border-left: 3px solid var(--accent-primary); padding-left: 1rem; margin: 0; font-family: monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary);">
+              "..."
+            </blockquote>
+          </div>
+
+          <!-- Right Snippet -->
+          <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--bg-glass-border); border-radius: var(--radius-sm); padding: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">
+              <span id="modal-doc2-name">Source Document 2</span>
+              <span id="modal-doc2-page" style="color: var(--color-mismatch);">Page --</span>
+            </div>
+            <blockquote id="modal-doc2-quote" style="border-left: 3px solid var(--color-mismatch); padding-left: 1rem; margin: 0; font-family: monospace; font-size: 0.9rem; line-height: 1.6; color: var(--text-primary);">
+              "..."
+            </blockquote>
+          </div>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-sm); padding: 1.5rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">
+            <i data-lucide="message-square-warning" style="width: 18px; height: 18px; color: var(--accent-primary);"></i>
+            <span>Automated Investor Question Generator</span>
+          </div>
+          <p id="modal-investor-q" style="color: var(--text-secondary); font-size: 0.95rem; margin: 0; line-height: 1.5;"></p>
+        </div>
+
+        <button class="btn-secondary" onclick="copyModalContent()" style="display: flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center; padding: 1rem;">
+          <i data-lucide="copy" style="width: 18px; height: 18px;"></i>
+          Copy Brief to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="js/socket.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
