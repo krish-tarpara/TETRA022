@@ -35,8 +35,7 @@ function run(graph) {
 
     for (const periodKey of allPeriods(graph)) {
       for (const basisClass of ['actual', 'forward']) {
-        const finding = checkIdentity(identity, graph, periodKey, basisClass);
-        if (finding) findings.push(finding);
+        findings.push(...checkIdentity(identity, graph, periodKey, basisClass));
       }
     }
   }
@@ -53,19 +52,90 @@ function allPeriods(graph) {
   return [...new Set(graph.nodes.map(n => n.period_key))].filter(p => p && p !== 'UNKNOWN');
 }
 
+/**
+ * Check one identity for one period and basis.
+ *
+ * Prefers to check the identity WITHIN a single document, and only falls back to comparing
+ * across documents when no single document states all the terms.
+ *
+ * This distinction is not cosmetic. Suppose the financial statements internally reconcile
+ * (revenue 3.2, COGS 2.0, gross profit 1.2) while the deck claims a gross profit of 1.5.
+ * Blending the two into a consensus and testing that would report an arithmetic failure that
+ * NEITHER document actually commits - the real problem there is a cross-document conflict,
+ * which is R1's job. Checking per document keeps each rule reporting the thing it can prove.
+ *
+ * It also produces the stronger finding: "this document contradicts itself" is a far better
+ * headline than "these numbers don't reconcile once blended".
+ *
+ * @returns {Array} zero or more findings - one per document that states all the terms
+ */
 function checkIdentity(identity, graph, periodKey, basisClass) {
   const resolve = metricKey => graph.index.one(metricKey, periodKey, basisClass);
 
   const resultNode = resolve(identity.result);
-  if (!resultNode || resultNode.consensus_value === null) return null;
+  if (!resultNode || resultNode.consensus_value === null) return [];
 
   const parts = gatherOperands(identity, resolve);
-  if (!parts) return null;
+  if (!parts) return [];
 
-  const computed = evaluate(identity, parts);
+  const allNodes = [...parts.map(p => p.node), resultNode];
+  const selfContained = documentsWithAllTerms(allNodes);
+
+  if (selfContained.length > 0) {
+    return selfContained
+      .map(documentId => evaluateFor(identity, graph, periodKey, basisClass, parts, resultNode, documentId))
+      .filter(Boolean);
+  }
+
+  // No single document has every term, so the identity can only be tested by combining
+  // documents. Still worth doing - a P&L split across a deck and a statement pack is common -
+  // but flagged so the narrative says so rather than accusing one document of self-contradiction.
+  const finding = evaluateFor(identity, graph, periodKey, basisClass, parts, resultNode, null);
+  return finding ? [finding] : [];
+}
+
+/** Documents that state every term of the identity, so it can be checked without blending. */
+function documentsWithAllTerms(nodes) {
+  if (nodes.length === 0) return [];
+
+  const docSets = nodes.map(n => new Set(n.observations.map(o => o.document_id)));
+  const [first, ...rest] = docSets;
+
+  return [...first].filter(docId => rest.every(set => set.has(docId)));
+}
+
+/**
+ * Value a specific document gives for a node, or the cross-document consensus when documentId
+ * is null. Median when one document states the same figure more than once.
+ */
+function valueFor(node, documentId) {
+  if (documentId === null) return node.consensus_value;
+
+  const values = node.observations
+    .filter(o => o.document_id === documentId && o.value_base !== null)
+    .map(o => o.value_base)
+    .sort((a, b) => a - b);
+
+  if (values.length === 0) return null;
+  return values[Math.floor((values.length - 1) / 2)];
+}
+
+/** Observations belonging to one document, or all of them for the cross-document case. */
+function observationsFor(node, documentId) {
+  if (documentId === null) return node.observations;
+  return node.observations.filter(o => o.document_id === documentId);
+}
+
+function evaluateFor(identity, graph, periodKey, basisClass, parts, resultNode, documentId) {
+  const scopedParts = parts.map(p => ({ ...p, value: valueFor(p.node, documentId) }));
+  if (scopedParts.some(p => p.value === null)) return null;
+
+  const stated = valueFor(resultNode, documentId);
+  if (stated === null) return null;
+
+  const computed = evaluate(identity, scopedParts);
   if (computed === null || !Number.isFinite(computed)) return null;
 
-  const stated = resultNode.consensus_value;
   const deltaAbs = stated - computed;
 
   // Percentage-unit identities (margins) are tested in percentage points; currency ones
@@ -79,23 +149,27 @@ function checkIdentity(identity, graph, periodKey, basisClass) {
     : dPct <= identity.tolerance_pct;
 
   const observations = [
-    ...parts.flatMap(p => p.node.observations),
-    ...resultNode.observations
+    ...scopedParts.flatMap(p => observationsFor(p.node, documentId)),
+    ...observationsFor(resultNode, documentId)
   ];
 
+  if (observations.length === 0) return null;
+
   const unit = identity.unit === 'currency' ? 'currency' : identity.unit;
-  const currency = resultNode.observations[0] ? resultNode.observations[0].currency : 'INR';
+  const currency = observations[0].currency || 'INR';
 
   const computation = {
     expression: identity.expression,
-    substituted: buildSubstitution(identity, parts, computed, stated, unit, currency),
+    substituted: buildSubstitution(identity, scopedParts, computed, stated, unit, currency),
     stated,
     computed,
     delta_abs: deltaAbs,
     delta_pct: dPct,
     result: withinTolerance ? 'PASS' : 'FAIL',
-    blocked_reason: blockedReason(parts, resultNode),
-    single_document: isSingleDocument(observations)
+    blocked_reason: blockedReason(scopedParts, resultNode, documentId),
+    // True when every term came from one document, which makes the finding a proof of internal
+    // self-contradiction rather than a disagreement between sources.
+    single_document: documentId !== null
   };
 
   if (usePp) {
@@ -104,8 +178,12 @@ function checkIdentity(identity, graph, periodKey, basisClass) {
     computation.tolerance_pct = identity.tolerance_pct;
   }
 
+  const filenames = [...new Set(observations.map(o => o.filename))];
+
   return makeFinding({
-    rule_id: `R2.${identity.id}`,
+    // Distinct rule_id per document, so two documents each failing the same identity produce
+    // two findings rather than colliding in the duplicate filter.
+    rule_id: documentId === null ? `R2.${identity.id}.combined` : `R2.${identity.id}`,
     rule_class: 'R2',
     metric_key: identity.result,
     period_key: periodKey,
@@ -116,17 +194,18 @@ function checkIdentity(identity, graph, periodKey, basisClass) {
     extra: {
       identity_id: identity.id,
       basis_class: basisClass,
+      scope: documentId === null ? 'across_documents' : 'within_document',
       // Which operand is the most likely culprit: the one whose own value is closest to
       // explaining the whole gap if it were wrong. Turns "the P&L doesn't add up" into
       // "COGS looks like the problem".
-      likely_culprit: likelyCulprit(identity, parts, deltaAbs),
-      operands: parts.map(p => ({
+      likely_culprit: likelyCulprit(identity, scopedParts, deltaAbs),
+      operands: scopedParts.map(p => ({
         metric_key: p.metric_key,
         sign: p.sign,
-        value: p.node.consensus_value,
+        value: p.value,
         sources: p.node.distinct_source_docs
       })),
-      documents_involved: [...new Set(observations.map(o => o.filename))]
+      documents_involved: filenames
     }
   });
 }
@@ -163,19 +242,18 @@ function operandKeys(identity) {
 
 function evaluate(identity, parts) {
   if (identity.type === 'linear') {
-    return parts.reduce((sum, p) =>
-      p.sign === '-' ? sum - p.node.consensus_value : sum + p.node.consensus_value, 0);
+    return parts.reduce((sum, p) => (p.sign === '-' ? sum - p.value : sum + p.value), 0);
   }
 
   if (identity.type === 'ratio') {
-    const numerator = parts[0].node.consensus_value;
-    const denominator = parts[1].node.consensus_value;
+    const numerator = parts[0].value;
+    const denominator = parts[1].value;
     if (denominator === 0) return null; // Undefined, not a failure. Skip silently.
     return (numerator / denominator) * (identity.scale || 1);
   }
 
   if (identity.type === 'product') {
-    return parts[0].node.consensus_value * identity.factor;
+    return parts[0].value * identity.factor;
   }
 
   return null;
@@ -191,13 +269,13 @@ function buildSubstitution(identity, parts, computed, stated, unit, currency) {
   let lhs;
   if (identity.type === 'linear') {
     lhs = parts
-      .map((p, i) => (i === 0 ? f(p.node.consensus_value) : `${p.sign} ${f(p.node.consensus_value)}`))
+      .map((p, i) => (i === 0 ? f(p.value) : `${p.sign} ${f(p.value)}`))
       .join(' ');
   } else if (identity.type === 'ratio') {
     const scale = identity.scale && identity.scale !== 1 ? ` x ${identity.scale}` : '';
-    lhs = `${fmt(parts[0].node.consensus_value, operandUnit(identity.numerator), currency)} / ${fmt(parts[1].node.consensus_value, operandUnit(identity.denominator), currency)}${scale}`;
+    lhs = `${fmt(parts[0].value, operandUnit(identity.numerator), currency)} / ${fmt(parts[1].value, operandUnit(identity.denominator), currency)}${scale}`;
   } else {
-    lhs = `${f(parts[0].node.consensus_value)} x ${identity.factor}`;
+    lhs = `${f(parts[0].value)} x ${identity.factor}`;
   }
 
   return `${lhs} = ${f(computed)}   [document states ${f(stated)}]`;
@@ -221,17 +299,15 @@ function likelyCulprit(identity, parts, deltaAbs) {
   let best = null;
 
   for (const p of parts) {
-    const magnitude = Math.abs(p.node.consensus_value);
+    const magnitude = Math.abs(p.value);
     if (magnitude === 0) continue;
     const relativeImpact = gap / magnitude;
     if (best === null || relativeImpact < best.relative_impact) {
       best = {
         metric_key: p.metric_key,
-        value: p.node.consensus_value,
+        value: p.value,
         relative_impact: relativeImpact,
-        would_need_to_be: p.sign === '-'
-          ? p.node.consensus_value - deltaAbs
-          : p.node.consensus_value + deltaAbs
+        would_need_to_be: p.sign === '-' ? p.value - deltaAbs : p.value + deltaAbs
       };
     }
   }
@@ -246,22 +322,19 @@ function likelyCulprit(identity, parts, deltaAbs) {
  * revenue produces a guaranteed "failure" that says nothing about the company. Better to
  * report it as unresolved than to accuse.
  */
-function blockedReason(parts, resultNode) {
+function blockedReason(parts, resultNode, documentId) {
   const allNodes = [...parts.map(p => p.node), resultNode];
 
   if (allNodes.some(n => n.blocked_reason)) return 'currency_mismatch';
 
+  // Only the observations actually used in this evaluation matter. When checking within one
+  // document, another document reporting the same metric in USD is irrelevant.
   const currencies = new Set(
-    allNodes.flatMap(n => n.observations.map(o => o.currency).filter(Boolean))
+    allNodes.flatMap(n => observationsFor(n, documentId).map(o => o.currency).filter(Boolean))
   );
   if (currencies.size > 1) return 'currency_mismatch';
 
   return null;
-}
-
-/** Did this identity fail inside a single document? That is the headline case. */
-function isSingleDocument(observations) {
-  return new Set(observations.map(o => o.document_id)).size === 1;
 }
 
 function fmt(value, unit, currency) {

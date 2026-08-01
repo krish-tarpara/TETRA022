@@ -14,6 +14,7 @@
 
 const crypto = require('crypto');
 const { unitOf } = require('../../../services/normalization/taxonomyMap');
+const { deriveSubject } = require('../../canonicalize');
 
 /** The five document categories the scoring model expects, plus a couple of extras. */
 const DOCS = {
@@ -67,6 +68,11 @@ function obs(spec) {
     period_type: basis === 'projected' ? 'projected' : 'historical',
     basis,
     basis_class: basis === 'projected' || basis === 'pro_forma' ? 'forward' : 'actual',
+
+    // Derived with the same function the real canonicalizer uses. Setting this by hand in
+    // fixtures would let it drift from production behaviour, and the tests would then be
+    // verifying something the engine never actually receives.
+    subject: spec.subject !== undefined ? spec.subject : deriveSubject(spec.metric, label),
 
     source: {
       page: spec.page === undefined ? 1 : spec.page,

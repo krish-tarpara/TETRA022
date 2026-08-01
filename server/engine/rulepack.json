@@ -282,6 +282,16 @@
       "unit": "currency"
     },
     {
+      "id": "closing_cash_is_cash_position",
+      "type": "linear",
+      "expression": "cash_position = closing_cash",
+      "terms": [["+", "cash_position"]],
+      "result": "closing_cash",
+      "tolerance_pct": 1.0,
+      "unit": "currency",
+      "note": "Definitional, not arithmetic. A balance sheet says 'cash and cash equivalents' and an MIS says 'closing cash balance' - the same quantity under two names. They must be separate metric keys so the opening + flow = closing identity works, which means nothing would otherwise compare them across documents and a genuine mismatch would go unreported. This identity closes that gap."
+    },
+    {
       "id": "post_money",
       "type": "linear",
       "expression": "pre_money_valuation + round_size = post_money_valuation",

@@ -67,10 +67,6 @@ function classify(finding) {
     return { classification: 'UNRESOLVED_INCONSISTENCY', reason: comp.blocked_reason };
   }
 
-  if (finding.confidence_factor !== undefined && finding.confidence_factor < GATE) {
-    return { classification: 'UNRESOLVED_INCONSISTENCY', reason: 'below_confidence_gate' };
-  }
-
   const delta = pickDelta(comp);
   const tolerance = pickTolerance(comp);
 
@@ -78,8 +74,22 @@ function classify(finding) {
     return { classification: 'UNRESOLVED_INCONSISTENCY', reason: 'incomparable_values' };
   }
 
+  // Agreement is checked BEFORE the confidence gate, and the ordering is deliberate.
+  //
+  // The gate exists to stop the engine making an accusation it cannot support. Agreement is not an
+  // accusation, so low confidence is no reason to withhold it - and withholding it actively
+  // misleads: it converts "these two documents agree" into "unresolved inconsistency", inventing a
+  // problem out of consensus.
+  //
+  // The bug this prevents is visible through adjudication. Marking one document authoritative
+  // lowers the confidence of the others, which turned already-agreeing figures from a green
+  // confirmation into a red finding - so an action meant to resolve conflicts created one.
   if (delta <= tolerance) {
     return { classification: 'VERIFIED_CONSISTENT', reason: 'within_tolerance' };
+  }
+
+  if (finding.confidence_factor !== undefined && finding.confidence_factor < GATE) {
+    return { classification: 'UNRESOLVED_INCONSISTENCY', reason: 'below_confidence_gate' };
   }
   if (delta <= tolerance * UNRESOLVED_MULTIPLIER) {
     return { classification: 'UNRESOLVED_INCONSISTENCY', reason: 'marginal_variance' };

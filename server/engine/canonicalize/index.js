@@ -95,6 +95,12 @@ function canonicalizeObservation(raw, document, sessionId) {
       basis,
       basis_class: basisClass(basis),
 
+      // Who or what this number is about, for metrics that repeat per entity. A cap table
+      // has one ownership row per shareholder, and without this they would all collapse
+      // into one "ownership @ FY2025-26" bucket - where the engine would compare the
+      // founder's 60% against an investor's 25% and report a conflict that isn't one.
+      subject: deriveSubject(metricKey, raw.raw_label),
+
       source: {
         page: numeric(raw.source_page),
         cell: raw.source_cell || null,
@@ -148,6 +154,43 @@ function canonicalizeBatch(rawRecords, document, sessionId) {
   }
 
   return { observations, dropped };
+}
+
+/**
+ * Metrics that appear once per entity rather than once per company.
+ *
+ * Ownership is the clear case: a cap table lists every shareholder separately. Left
+ * undistinguished, those rows would be treated as competing claims about a single number.
+ */
+const SUBJECT_METRICS = new Set(['ownership']);
+
+/** Words that decorate a holder name without identifying it. */
+const SUBJECT_NOISE = /\b(holding|holdings|ownership|shareholding|equity|stake|share|shares|percent|percentage|pct|owned|fully\s+diluted|diluted|post|pre)\b/g;
+
+/**
+ * Extract the entity a number is about from its label.
+ *
+ * "Rahul Sharma (Founder) - shareholding %" -> "rahul sharma founder"
+ *
+ * Deliberately crude. Getting it slightly wrong splits one shareholder into two buckets,
+ * which understates the ownership total and gets caught by R7 as a sum that misses 100%.
+ * Getting it absent would merge different shareholders into one bucket and manufacture a
+ * conflict out of nothing. The first failure is visible and recoverable; the second is a
+ * false accusation. So we always produce something.
+ */
+function deriveSubject(metricKey, rawLabel) {
+  if (!SUBJECT_METRICS.has(metricKey)) return null;
+  if (!rawLabel) return 'unnamed';
+
+  const cleaned = String(rawLabel)
+    .toLowerCase()
+    .replace(/[%()\[\]{}]/g, ' ')
+    .replace(SUBJECT_NOISE, ' ')
+    .replace(/[^a-z0-9\s.&-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return cleaned || 'unnamed';
 }
 
 /**
@@ -211,4 +254,11 @@ function clamp01(n) {
   return Math.max(0, Math.min(1, n));
 }
 
-module.exports = { canonicalizeObservation, canonicalizeBatch, deriveBasis, basisClass };
+module.exports = {
+  canonicalizeObservation,
+  canonicalizeBatch,
+  deriveBasis,
+  basisClass,
+  deriveSubject,
+  SUBJECT_METRICS
+};

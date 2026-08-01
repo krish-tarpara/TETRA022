@@ -71,6 +71,18 @@ module.exports = function run() {
       eq(findings.length, 0, 'a forecast is not a contradiction');
     });
 
+    test('low confidence does NOT demote an agreement', () => {
+      // The confidence gate protects against unsupported accusations. Agreement is not an
+      // accusation, so a badly-read pair that nonetheless agrees stays a confirmation rather than
+      // becoming a manufactured "inconsistency".
+      const findings = r1.run(graphOf([
+        obs({ metric: 'cash_position', value: 12000000, period: 'FY2024-25', doc: DOCS.deck,
+              confidence: { value: 0.5, parse: 0.55 } }),
+        obs({ metric: 'cash_position', value: 12000000, period: 'FY2024-25', doc: DOCS.auditor })
+      ]));
+      eq(findings[0].classification, 'VERIFIED_CONSISTENT');
+    });
+
     test('low confidence demotes a mismatch to a question', () => {
       // Same 62% gap as the headline case, but one number came off an unreadable slide.
       const findings = r1.run(graphOf([
@@ -222,6 +234,52 @@ module.exports = function run() {
       ]));
       falsy(find(findings, f => f.rule_id === 'R2.gross_profit'),
         'FY26 revenue minus FY25 cogs is not an identity');
+    });
+
+    test('CRITICAL - documents are not blended into one equation', () => {
+      // The financial statements reconcile perfectly on their own. The deck states a different
+      // gross profit. Blending the two into a consensus and testing that would report an
+      // arithmetic failure that NEITHER document commits - the real issue is a cross-document
+      // conflict, which belongs to R1.
+      const findings = r2.run(graphOf([
+        ...pnl(DOCS.financials, 'FY2024-25', { revenue: 32000000, cogs: 20000000, gross_profit: 12000000 }),
+        obs({ metric: 'gross_profit', value: 15000000, period: 'FY2024-25', doc: DOCS.deck })
+      ]));
+
+      const failures = findings.filter(f => f.computation.result === 'FAIL');
+      eq(failures.length, 0, 'no invented arithmetic error');
+
+      const pass = find(findings, f => f.details.identity_id === 'gross_profit');
+      truthy(pass, 'the identity was still checked');
+      eq(pass.details.scope, 'within_document', 'and checked inside the statements alone');
+      eq(pass.computation.single_document, true);
+    });
+
+    test('two documents each failing the same identity produce two findings', () => {
+      const findings = r2.run(graphOf([
+        ...pnl(DOCS.financials, 'FY2024-25', { revenue: 32000000, cogs: 20000000, gross_profit: 15000000 }),
+        ...pnl(DOCS.mis, 'FY2024-25', { revenue: 32000000, cogs: 20000000, gross_profit: 14000000 })
+      ]));
+      const gpFailures = findings.filter(
+        f => f.details.identity_id === 'gross_profit' && f.computation.result === 'FAIL'
+      );
+      eq(gpFailures.length, 2, 'each document contradicts itself separately');
+      truthy(gpFailures.every(f => f.computation.single_document));
+    });
+
+    test('an identity split across documents is still checked, but marked as such', () => {
+      // Deck gives revenue and gross profit, statements give COGS. No single document has all
+      // three, so the only way to test the identity is to combine them - which is worth doing,
+      // and worth labelling.
+      const findings = r2.run(graphOf([
+        obs({ metric: 'revenue', value: 32000000, period: 'FY2024-25', doc: DOCS.deck }),
+        obs({ metric: 'gross_profit', value: 15000000, period: 'FY2024-25', doc: DOCS.deck }),
+        obs({ metric: 'cogs', value: 20000000, period: 'FY2024-25', doc: DOCS.financials })
+      ]));
+      const f = find(findings, x => x.details.identity_id === 'gross_profit');
+      truthy(f, 'the identity was checked across documents');
+      eq(f.details.scope, 'across_documents');
+      eq(f.computation.single_document, false, 'so it is not a self-contradiction claim');
     });
 
     test('the likely culprit is named', () => {

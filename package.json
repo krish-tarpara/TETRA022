@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node server/index.js",
     "start": "node server/index.js",
-    "test": "node server/engine/__tests__/run.js"
+    "migrate": "node server/db/migrate.js",
+    "test": "node server/engine/__tests__/run.js",
+    "test:e2e": "node server/engine/__tests__/e2e.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.1.0",

@@ -62,6 +62,11 @@ function makeFinding(spec) {
     confidence_factor: scored.confidence_factor
   });
 
+  // A confirmation has no severity - it is not a problem. Reporting "VERIFIED_CONSISTENT,
+  // severity 6, MINOR" alongside a green tick reads as a contradiction, and scoring already
+  // excludes these findings, so the number served no purpose.
+  const isConfirmation = classified.classification === 'VERIFIED_CONSISTENT';
+
   return {
     finding_id: crypto.randomUUID(),
     ref_code: null, // assigned by assignRefCodes once the full set is known
@@ -71,8 +76,8 @@ function makeFinding(spec) {
 
     classification: classified.classification,
     classification_reason: classified.reason,
-    severity_score: scored.severity_score,
-    severity_band: scored.severity_band,
+    severity_score: isConfirmation ? 0 : scored.severity_score,
+    severity_band: isConfirmation ? 'NONE' : scored.severity_band,
     pillar: pillarFor(spec.rule_class),
 
     metric_key: spec.metric_key,

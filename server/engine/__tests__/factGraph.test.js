@@ -125,8 +125,9 @@ module.exports = function run() {
       ], { fxRates: {} });
 
       eq(graph.nodes.length, 2, 'no rate means no comparison');
-      const usdNode = graph.nodes.find(n => n.node_key.endsWith('USD'));
+      const usdNode = graph.nodes.find(n => n.node_key.includes('|USD|'));
       truthy(usdNode, 'the USD observation is isolated in its own node');
+      eq(usdNode.distinct_source_docs, 1, 'and it stands alone, so no conflict is claimed');
     });
 
     test('with a rate, USD and INR meet on one node and convert', () => {

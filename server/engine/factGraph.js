@@ -7,7 +7,7 @@
  * getting it wrong is what produces false mismatches, so the key composition below is the
  * most safety-critical decision in the engine.
  *
- * node_key = metric_key | period_key | basis_class | currency_scope
+ * node_key = metric_key | period_key | basis_class | currency_scope | subject
  *
  * Why each component is there:
  *   metric_key      obvious - revenue and EBITDA are not the same claim
@@ -18,6 +18,10 @@
  *                   INR observations meet and get compared. The raw currency code when a
  *                   rate is missing, which keeps them apart and lets the rule report
  *                   `currency_mismatch` instead of comparing 5.2 to 3.2 as if both were INR.
+ *   subject         who the number is about, for metrics that repeat per entity. Only
+ *                   ownership uses it today. Without it, every row of a cap table becomes a
+ *                   competing claim about one number and R1 reports the founder's 60%
+ *                   conflicting with an investor's 25%.
  */
 
 const rulepack = require('./rulepack.json');
@@ -45,7 +49,9 @@ function buildFactGraph(observations, options = {}) {
         metric_label: labelOf(obs.metric_key),
         unit: obs.unit || unitOf(obs.metric_key),
         period_key: obs.period_key,
+        period_granularity: obs.period_granularity,
         basis_class: obs.basis_class,
+        subject: obs.subject || null,
         observations: []
       });
     }
@@ -76,7 +82,13 @@ function buildFactGraph(observations, options = {}) {
 
 function nodeKeyFor(obs, fxTable) {
   const currencyScope = currencyScopeFor(obs, fxTable);
-  return [obs.metric_key, obs.period_key, obs.basis_class, currencyScope].join('|');
+  return [
+    obs.metric_key,
+    obs.period_key,
+    obs.basis_class,
+    currencyScope,
+    obs.subject || '-'
+  ].join('|');
 }
 
 /**
@@ -300,11 +312,21 @@ function buildIndex(nodes) {
   return {
     /** All nodes for a metric, any period. */
     metric: key => byMetric.get(key) || [],
-    /** The single node for a metric in one period and basis, if it exists. */
+    /**
+     * The single node for a metric in one period and basis.
+     *
+     * Returns null when more than one exists. That happens for subject-bearing metrics like
+     * ownership, where a period legitimately holds one node per shareholder - and an
+     * accounting identity that silently picked "the first shareholder" would be nonsense.
+     * Callers that want the whole set ask for `all()` instead.
+     */
     one: (metricKey, periodKey, basisClass) => {
       const hits = byMetricPeriodBasis.get(`${metricKey}|${periodKey}|${basisClass}`) || [];
-      return hits.length > 0 ? hits[0] : null;
+      return hits.length === 1 ? hits[0] : null;
     },
+    /** Every node for a metric in one period and basis. One per subject, where subjects exist. */
+    all: (metricKey, periodKey, basisClass) =>
+      byMetricPeriodBasis.get(`${metricKey}|${periodKey}|${basisClass}`) || [],
     /** All nodes in a period. */
     period: key => byPeriod.get(key) || [],
     /** Every period key present, chronologically where resolvable. */

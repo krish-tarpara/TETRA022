@@ -10,7 +10,9 @@ const { report } = require('./harness');
 const suites = [
   './canonicalize.test.js',
   './factGraph.test.js',
-  './rules.test.js'
+  './rules.test.js',
+  './rules2.test.js',
+  './adjudicate.test.js'
 ];
 
 console.log('FinVerify engine tests');
