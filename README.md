@@ -30,7 +30,6 @@
 - [Installation & Setup](#️-installation--setup)
 - [API Reference](#-api-reference)
 - [Database Schema](#-database-schema)
-- [Contributing](#-contributing)
 
 
 ---
@@ -208,17 +207,6 @@ FinVerify uses a normalized PostgreSQL schema designed for auditability:
 - `documents` — Metadata about uploaded files
 - `findings` — Individual deterministic rule violations (Severity, Evidence, Computation)
 - `adjudications` — Audit trail of user overrides
-
----
-
-## 🤝 Contributing
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m "feat: add amazing feature"`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
-
 
 
 <p align="center">
