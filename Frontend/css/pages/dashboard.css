@@ -135,3 +135,22 @@
   background-color: rgba(5, 150, 105, 0.12);
   border-color: rgba(5, 150, 105, 0.2);
 }
+
+/* New UI Sections */
+.pillar-bar-container { margin-bottom: 1rem; }
+.pillar-bar-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem; }
+.pillar-bar-bg { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.pillar-bar-fill { height: 100%; background: var(--accent-primary); }
+.pillar-applicable-false { opacity: 0.5; }
+.ceiling-marker { font-size: 0.85rem; color: #dc2626; font-weight: 600; margin-top: 0.5rem; background: #fef2f2; padding: 0.5rem; border-radius: 8px; }
+.filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+.filter-btn { padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid #e2e8f0; background: white; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+.filter-btn.active { background: var(--text-primary); color: white; border-color: var(--text-primary); }
+.verified-section { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 1.5rem; margin-top: 2rem; }
+.follow-up-list { list-style: none; padding: 0; }
+.follow-up-list li { padding: 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 0.5rem; }
+.ai-notes-panel { background: #fdf4ff; border: 1px solid #fae8ff; border-radius: var(--radius-md); padding: 1.5rem; margin-top: 2rem; }
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: white; border-radius: var(--radius-md); width: 90%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; }
+.modal-close { position: absolute; top: 1.5rem; right: 1.5rem; cursor: pointer; color: var(--text-secondary); background: #f1f5f9; border-radius: 50%; padding: 0.5rem; display: flex; }
+.classification-badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: white; display: inline-block; }

@@ -1,34 +1,29 @@
 .card {
   padding: 2rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  background-color: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.12);
+  border: none;
+  background-color: #e3f2e8;
+  box-shadow: 10px 10px 20px #c1cec5, -10px -10px 20px #ffffff;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .card:hover {
   transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.4);
 }
 
 .card:hover.interactive {
-  background-color: var(--bg-card-hover);
-  border-color: var(--accent-primary);
+  background-color: #e3f2e8;
+  border-color: transparent;
   transform: translateY(-6px) scale(1.01);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(5, 150, 105, 0.2);
+  box-shadow: 15px 15px 30px #c1cec5, -15px -15px 30px #ffffff;
 }
 
 .metric-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: #e3f2e8;
+  border: none;
   border-radius: var(--radius-md);
   padding: 1.5rem;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-card);
+  box-shadow: 10px 10px 20px #c1cec5, -10px -10px 20px #ffffff;
   display: flex;
   flex-direction: column;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -36,8 +31,7 @@
 
 .metric-card:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: rgba(5, 150, 105, 0.4);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08), 0 0 20px rgba(5, 150, 105, 0.1);
+  box-shadow: 15px 15px 30px #c1cec5, -15px -15px 30px #ffffff;
 }
 
 .metric-card-header {
