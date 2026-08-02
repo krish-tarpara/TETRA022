@@ -462,12 +462,9 @@ async function updateSessionFxRates(sessionId, fxRates) {
 }
 
 module.exports = {
-<<<<<<< Updated upstream
-=======
   getUserById,
   createUserWithEmail,
   getUserByEmail,
->>>>>>> Stashed changes
   insertObservations,
   getSessionObservations,
   getSessionObservationsForEngine,

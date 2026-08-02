@@ -18,16 +18,16 @@
 const PDFDocument = require('pdfkit');
 
 const COLORS = {
-  primary: '#1e3a8a',
-  text: '#334155',
-  muted: '#64748b',
-  border: '#cbd5e1',
-  panel: '#f1f5f9',
-  critical: '#dc2626',
-  high: '#ea580c',
-  medium: '#ca8a04',
-  minor: '#64748b',
-  good: '#059669'
+  primary: '#0F172A',
+  text: '#000000',
+  muted: '#475569',
+  border: '#E2E8F0',
+  panel: '#F8FAFC',
+  critical: '#991B1B',
+  high: '#1E293B',
+  medium: '#475569',
+  minor: '#94A3B8',
+  good: '#1E293B'
 };
 
 const CLASSIFICATION_LABELS = {
@@ -63,7 +63,7 @@ function generatePdf(session, findings, documents, res) {
 function drawSummaryPage(doc, session, breakdown, problems, confirmations, documents) {
   const width = doc.page.width - 90;
 
-  doc.rect(0, 0, doc.page.width, 6).fill(COLORS.primary);
+  doc.moveTo(0, 0).lineTo(doc.page.width, 0).strokeColor(COLORS.primary).lineWidth(6).stroke();
   doc.y = 40;
 
   doc.font('Helvetica-Bold').fontSize(20).fillColor(COLORS.primary)
@@ -75,11 +75,11 @@ function drawSummaryPage(doc, session, breakdown, problems, confirmations, docum
       `${(documents || []).length} documents  ·  Rule pack v${session.rulepack_version || 'n/a'}`
     );
 
-  doc.moveDown(1);
+  doc.moveDown(2);
 
   // ── Score panel ──
   const panelTop = doc.y;
-  doc.roundedRect(45, panelTop, width, 62, 4).fill(COLORS.panel);
+  doc.roundedRect(45, panelTop, width, 62, 4).fillAndStroke(COLORS.panel, COLORS.border);
 
   doc.font('Helvetica-Bold').fontSize(34).fillColor(scoreColor(session.readiness_score))
     .text(`${session.readiness_score}`, 60, panelTop + 12, { width: 70, align: 'left' });
@@ -106,9 +106,9 @@ function drawSummaryPage(doc, session, breakdown, problems, confirmations, docum
   // ── Executive assessment ──
   if (session.executive_summary) {
     sectionHeading(doc, 'EXECUTIVE ASSESSMENT');
-    doc.font('Helvetica').fontSize(9.5).fillColor(COLORS.text)
-      .text(session.executive_summary, 45, doc.y, { width, align: 'left', lineGap: 2.5 });
-    doc.moveDown(1);
+    doc.font('Helvetica').fontSize(10).fillColor(COLORS.text)
+      .text(session.executive_summary, 45, doc.y, { width, align: 'left', lineGap: 4 });
+    doc.moveDown(1.5);
   }
 
   // ── Pillar breakdown ──
@@ -134,12 +134,12 @@ function drawSummaryPage(doc, session, breakdown, problems, confirmations, docum
       const note = pillar.applicable
         ? `${Math.round(pillar.weight * 100)}%  ·  ${pillar.finding_count} finding${pillar.finding_count === 1 ? '' : 's'}`
         : `${Math.round(pillar.weight * 100)}%  ·  not assessed`;
-      doc.font('Helvetica').fontSize(8).fillColor(COLORS.muted)
+      doc.font('Helvetica').fontSize(8.5).fillColor(COLORS.muted)
         .text(note, barX + barWidth + 42, rowY + 1, { width: 110, lineBreak: false });
 
-      doc.y = rowY + 14;
+      doc.y = rowY + 18;
     }
-    doc.moveDown(0.6);
+    doc.moveDown(1);
   }
 
   // ── Counts ──
@@ -156,12 +156,12 @@ function drawSummaryPage(doc, session, breakdown, problems, confirmations, docum
 
   for (const [label, count, color] of countRows) {
     const rowY = doc.y;
-    doc.circle(50, rowY + 4, 3).fill(color);
-    doc.font('Helvetica').fontSize(9).fillColor(COLORS.text)
+    doc.circle(50, rowY + 5, 3).fill(color);
+    doc.font('Helvetica').fontSize(9.5).fillColor(COLORS.text)
       .text(label, 60, rowY, { width: 170, lineBreak: false });
-    doc.font('Helvetica-Bold').fontSize(9)
+    doc.font('Helvetica-Bold').fontSize(10)
       .text(String(count), 235, rowY, { width: 30, lineBreak: false });
-    doc.y = rowY + 12;
+    doc.y = rowY + 18;
   }
 
   if (counts.unsupported_claims) {
@@ -176,13 +176,13 @@ function drawSummaryPage(doc, session, breakdown, problems, confirmations, docum
 
     for (const f of problems.slice(0, 3)) {
       const rowY = doc.y;
-      doc.font('Helvetica-Bold').fontSize(8.5).fillColor(bandColor(f.severity_band))
+      doc.font('Helvetica-Bold').fontSize(9.5).fillColor(bandColor(f.severity_band))
         .text(`${f.ref_code}  ${f.severity_band}`, 45, rowY, { width: width, lineBreak: false });
-      doc.font('Helvetica').fontSize(9).fillColor(COLORS.text)
-        .text(truncate(f.narrative || f.computation.expression, 240), 45, rowY + 11, { width, lineGap: 1.5 });
-      doc.moveDown(0.5);
+      doc.font('Helvetica').fontSize(10).fillColor(COLORS.text)
+        .text(truncate(f.narrative || f.computation.expression, 240), 45, rowY + 13, { width, lineGap: 3 });
+      doc.moveDown(0.8);
     }
-    doc.moveDown(0.3);
+    doc.moveDown(0.5);
   }
 
   // ── Priority questions ──
@@ -197,11 +197,11 @@ function drawSummaryPage(doc, session, breakdown, problems, confirmations, docum
       const ref = typeof q === 'string' ? null : q.ref_code;
       const rowY = doc.y;
 
-      doc.font('Helvetica-Bold').fontSize(9).fillColor(COLORS.primary)
+      doc.font('Helvetica-Bold').fontSize(10).fillColor(COLORS.primary)
         .text(`${i + 1}.`, 45, rowY, { width: 16, lineBreak: false });
-      doc.font('Helvetica').fontSize(9).fillColor(COLORS.text)
-        .text(ref ? `${text}  [${ref}]` : text, 61, rowY, { width: width - 16, lineGap: 1.5 });
-      doc.moveDown(0.4);
+      doc.font('Helvetica').fontSize(10).fillColor(COLORS.text)
+        .text(ref ? `${text}  [${ref}]` : text, 61, rowY, { width: width - 16, lineGap: 3 });
+      doc.moveDown(0.8);
     });
   }
 }
@@ -212,13 +212,13 @@ function drawFindingDetails(doc, problems, confirmations) {
   if (problems.length === 0 && confirmations.length === 0) return;
 
   doc.addPage();
-  doc.rect(0, 0, doc.page.width, 6).fill(COLORS.primary);
+  doc.moveTo(0, 0).lineTo(doc.page.width, 0).strokeColor(COLORS.primary).lineWidth(6).stroke();
   doc.y = 40;
 
   doc.font('Helvetica-Bold').fontSize(15).fillColor(COLORS.primary).text('DETAILED FINDINGS');
-  doc.font('Helvetica').fontSize(8.5).fillColor(COLORS.muted)
+  doc.font('Helvetica').fontSize(9.5).fillColor(COLORS.muted)
     .text('Every finding below shows the arithmetic that produced it and the source text it came from.');
-  doc.moveDown(1);
+  doc.moveDown(1.5);
 
   for (const f of problems) drawFinding(doc, f);
 
@@ -249,47 +249,51 @@ function drawFinding(doc, f) {
   const estimate = estimateHeight(doc, f, width);
   if (doc.y + estimate > doc.page.height - 60) {
     doc.addPage();
-    doc.rect(0, 0, doc.page.width, 6).fill(COLORS.primary);
+    doc.moveTo(0, 0).lineTo(doc.page.width, 0).strokeColor(COLORS.primary).lineWidth(6).stroke();
     doc.y = 40;
   }
 
   const top = doc.y;
 
-  // Severity stripe down the left edge, so the page can be skimmed by colour.
-  doc.rect(45, top, 3, estimate).fill(bandColor(f.severity_band));
+  // Subtle left border for the finding block
+  doc.rect(45, top, 2, estimate).fill(COLORS.border);
+  // Small indicator at the top for severity
+  doc.rect(45, top, 2, 20).fill(bandColor(f.severity_band));
 
-  doc.font('Helvetica-Bold').fontSize(10).fillColor(COLORS.primary)
+  doc.font('Helvetica-Bold').fontSize(11).fillColor(COLORS.primary)
     .text(`${f.ref_code}   ${f.metric_label || f.metric_key}${f.period_key ? ` · ${f.period_key}` : ''}`, 56, top, { width: width - 11 });
 
-  doc.font('Helvetica-Bold').fontSize(8).fillColor(bandColor(f.severity_band))
+  doc.moveDown(0.2);
+
+  doc.font('Helvetica-Bold').fontSize(9).fillColor(bandColor(f.severity_band))
     .text(
       `${CLASSIFICATION_LABELS[f.classification] || f.classification}  ·  ` +
       `severity ${f.severity_score} (${f.severity_band})`,
-      56, doc.y + 1, { width: width - 11 }
+      56, doc.y, { width: width - 11 }
     );
 
-  doc.moveDown(0.35);
+  doc.moveDown(0.8);
 
   // The arithmetic. Monospace and boxed, because this is the proof and it must look like one.
   if (comp.substituted) {
     const boxTop = doc.y;
-    const boxHeight = doc.font('Courier').fontSize(8.5).heightOfString(comp.substituted, { width: width - 26 }) + 14;
+    const boxHeight = doc.font('Courier').fontSize(9.5).heightOfString(comp.substituted, { width: width - 26 }) + 16;
     doc.roundedRect(56, boxTop, width - 11, boxHeight, 2).fill(COLORS.panel);
-    doc.font('Courier-Bold').fontSize(8.5).fillColor(COLORS.text)
-      .text(comp.substituted, 63, boxTop + 7, { width: width - 26 });
-    doc.y = boxTop + boxHeight + 4;
+    doc.font('Courier-Bold').fontSize(9.5).fillColor(COLORS.text)
+      .text(comp.substituted, 63, boxTop + 8, { width: width - 26 });
+    doc.y = boxTop + boxHeight + 6;
   }
 
   if (comp.expression) {
-    doc.font('Helvetica-Oblique').fontSize(7.5).fillColor(COLORS.muted)
+    doc.font('Helvetica-Oblique').fontSize(8.5).fillColor(COLORS.muted)
       .text(`Check applied: ${comp.expression}`, 56, doc.y, { width: width - 11 });
-    doc.moveDown(0.25);
+    doc.moveDown(0.6);
   }
 
   if (f.narrative) {
-    doc.font('Helvetica').fontSize(9).fillColor(COLORS.text)
-      .text(f.narrative, 56, doc.y, { width: width - 11, lineGap: 1.5 });
-    doc.moveDown(0.3);
+    doc.font('Helvetica').fontSize(10).fillColor(COLORS.text)
+      .text(f.narrative, 56, doc.y, { width: width - 11, lineGap: 3 });
+    doc.moveDown(0.6);
   }
 
   // Severity working, so the number is never unexplained.
@@ -306,20 +310,20 @@ function drawFinding(doc, f) {
 
   // Evidence with verbatim quotes.
   if (evidence.length > 0) {
-    doc.font('Helvetica-Bold').fontSize(7.5).fillColor(COLORS.muted)
+    doc.font('Helvetica-Bold').fontSize(8.5).fillColor(COLORS.muted)
       .text('SOURCES', 56, doc.y, { width: width - 11 });
-    doc.moveDown(0.15);
+    doc.moveDown(0.4);
 
     for (const e of evidence.slice(0, 6)) {
       const location = [e.filename, e.page ? `p.${e.page}` : null, e.cell]
         .filter(Boolean).join(' · ');
-      doc.font('Helvetica').fontSize(8).fillColor(COLORS.text)
+      doc.font('Helvetica-Bold').fontSize(9).fillColor(COLORS.text)
         .text(`${location} — states ${e.value_raw || e.value_base}`, 62, doc.y, { width: width - 22 });
       if (e.quote) {
-        doc.font('Helvetica-Oblique').fontSize(7.5).fillColor(COLORS.muted)
-          .text(`"${truncate(e.quote, 200)}"`, 62, doc.y, { width: width - 22 });
+        doc.font('Helvetica-Oblique').fontSize(9).fillColor(COLORS.muted)
+          .text(`"${truncate(e.quote, 200)}"`, 62, doc.y, { width: width - 22, lineGap: 2 });
       }
-      doc.moveDown(0.2);
+      doc.moveDown(0.5);
     }
 
     if (evidence.length > 6) {
@@ -336,9 +340,9 @@ function drawFinding(doc, f) {
       .text(f.follow_up_question, 56, doc.y, { width: width - 11, lineGap: 1.5 });
   }
 
-  doc.moveDown(0.8);
+  doc.moveDown(1.5);
   doc.moveTo(56, doc.y).lineTo(doc.page.width - 45, doc.y).strokeColor(COLORS.border).lineWidth(0.5).stroke();
-  doc.moveDown(0.6);
+  doc.moveDown(1);
 }
 
 function drawConfirmation(doc, f) {
@@ -346,7 +350,7 @@ function drawConfirmation(doc, f) {
 
   if (doc.y > doc.page.height - 80) {
     doc.addPage();
-    doc.rect(0, 0, doc.page.width, 6).fill(COLORS.primary);
+    doc.moveTo(0, 0).lineTo(doc.page.width, 0).strokeColor(COLORS.primary).lineWidth(6).stroke();
     doc.y = 40;
   }
 
@@ -446,7 +450,7 @@ function generateLegacyPdf(session, discrepancies, documents, res) {
   res.setHeader('Content-Disposition', `attachment; filename="FinVerify_${shortId(session.id)}_legacy.pdf"`);
   doc.pipe(res);
 
-  doc.rect(0, 0, doc.page.width, 6).fill(COLORS.primary);
+  doc.moveTo(0, 0).lineTo(doc.page.width, 0).strokeColor(COLORS.primary).lineWidth(6).stroke();
   doc.y = 45;
 
   doc.font('Helvetica-Bold').fontSize(18).fillColor(COLORS.primary).text('DISCREPANCY REPORT');
@@ -501,26 +505,26 @@ function sectionHeading(doc, text) {
  * that gets slightly more room than it needed is invisible; one that gets less loses text.
  */
 function estimateHeight(doc, f, width) {
-  let height = 34; // header lines
+  let height = 50; // header lines
 
   const comp = f.computation || {};
   if (comp.substituted) {
-    height += doc.font('Courier').fontSize(8.5).heightOfString(comp.substituted, { width: width - 26 }) + 18;
+    height += doc.font('Courier').fontSize(9.5).heightOfString(comp.substituted, { width: width - 26 }) + 24;
   }
-  if (comp.expression) height += 11;
+  if (comp.expression) height += 16;
   if (f.narrative) {
-    height += doc.font('Helvetica').fontSize(9).heightOfString(f.narrative, { width: width - 11 }) + 4;
+    height += doc.font('Helvetica').fontSize(10).heightOfString(f.narrative, { width: width - 11, lineGap: 3 }) + 10;
   }
-  if (f.factors) height += 20;
+  if (f.factors) height += 25;
 
   const evidence = (f.evidence || []).slice(0, 6);
-  height += evidence.length * 22 + (evidence.length > 0 ? 12 : 0);
+  height += evidence.length * 32 + (evidence.length > 0 ? 16 : 0);
 
   if (f.follow_up_question) {
-    height += doc.font('Helvetica').fontSize(8.5).heightOfString(f.follow_up_question, { width: width - 11 }) + 16;
+    height += doc.font('Helvetica').fontSize(9.5).heightOfString(f.follow_up_question, { width: width - 11, lineGap: 2 }) + 24;
   }
 
-  return height + 16;
+  return height + 32;
 }
 
 function scoreColor(score) {

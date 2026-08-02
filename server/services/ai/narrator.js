@@ -199,11 +199,7 @@ function usable(text) {
  *
  * Returns null on any failure. The tab then shows "unavailable", which is fine.
  */
-<<<<<<< Updated upstream
-const SECOND_OPINION_MODEL = process.env.REASONER_MODEL || 'deepseek-r1-distill-llama-70b';
-=======
 const SECOND_OPINION_MODEL = process.env.REASONER_MODEL || 'llama3-70b-8192';
->>>>>>> Stashed changes
 
 async function secondOpinion(findings, breakdown) {
   const client = getClient();
