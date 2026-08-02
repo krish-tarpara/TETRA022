@@ -17,9 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const DOCUMENT_TYPES = [
     { value: 'pitch_deck', label: 'Pitch Deck' },
-    { value: 'financial_model', label: 'Financial Model' },
+    { value: 'financial_statements', label: 'Financial Statements' },
+    { value: 'mis', label: 'MIS Report' },
+    { value: 'projections', label: 'Projections' },
     { value: 'cap_table', label: 'Cap Table' },
-    { value: 'certified_pnl', label: 'Certified P&L' },
+    { value: 'auditor_notes', label: 'Auditor Notes' },
+    { value: 'term_sheet', label: 'Term Sheet' },
+    { value: 'kpi_dashboard', label: 'KPI Dashboard' },
     { value: 'unknown', label: 'Auto-detect' }
   ];
 
@@ -170,17 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await window.api.post('/analyze', formData);
       const sessionId = res.sessionId;
       localStorage.setItem('currentSessionId', sessionId);
-
-      // We emit the analysis:start directly so the server starts processing.
-      // (The socket connection might need to be initiated if not already connected in this page context)
-      // Usually the dashboard page handles the socket connection for progress, but we need to start it here.
-      const token = localStorage.getItem('finverify_token');
-      const socket = io('http://localhost:5000/analysis', { auth: { token } });
-      socket.on('connect', () => {
-        socket.emit('analysis:start', { sessionId });
-        // Redirect to dashboard
-        window.location.href = `analysis.html?sessionId=${sessionId}`;
-      });
+      window.location.href = `analysis.html?sessionId=${sessionId}`;
     } catch (err) {
       uploadError.textContent = err.message || 'Upload failed';
       uploadError.style.display = 'block';
