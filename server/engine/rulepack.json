@@ -1,0 +1,439 @@
+{
+  "version": "1.0.0",
+  "description": "FinVerify deterministic rule pack. Every tunable number in the verification engine lives here. Changing this file changes verdicts, so the version is stamped onto every finding.",
+
+  "fiscal": {
+    "start_month": 4,
+    "base_currency": "INR",
+    "note": "Indian fiscal year: April 1 - March 31. FY2025-26 starts April 2025."
+  },
+
+  "base_weights": {
+    "R1": 15,
+    "R2": 18,
+    "R3": 12,
+    "R4": 8,
+    "R5": 10,
+    "R6": 6,
+    "R7": 17
+  },
+
+  "tolerances": {
+    "default_pct": 2.0,
+    "by_metric": {
+      "revenue": 2.0,
+      "arr": 2.0,
+      "mrr": 2.0,
+      "cogs": 2.0,
+      "gross_profit": 2.0,
+      "opex": 2.0,
+      "ebitda": 2.0,
+      "net_profit": 2.0,
+      "total_assets": 0.5,
+      "liabilities": 0.5,
+      "equity": 0.5,
+      "cash_position": 1.0,
+      "opening_cash": 0.5,
+      "closing_cash": 0.5,
+      "net_cash_flow": 1.0,
+      "burn_rate": 3.0,
+      "cash_runway": 5.0,
+      "customer_base": 1.0,
+      "headcount": 8.0,
+      "valuation": 1.0,
+      "pre_money_valuation": 0.5,
+      "post_money_valuation": 0.5,
+      "round_size": 0.5,
+      "tam": 10.0
+    },
+    "percentage_point_metrics": {
+      "gross_margin": 0.2,
+      "ebitda_margin": 0.2,
+      "net_margin": 0.2,
+      "revenue_growth": 0.5,
+      "churn_rate": 0.3,
+      "ownership": 0.1,
+      "esop_pool": 0.1
+    },
+    "note": "by_metric is a percentage of the compared value. percentage_point_metrics is an absolute percentage-point gap, because a 2% relative tolerance on a 40% margin is meaningless. headcount is deliberately loose at 8%: it is a point-in-time snapshot that moves weekly, so two documents prepared a month apart will legitimately disagree, and a tight tolerance here generates pure noise."
+  },
+
+  "importance": {
+    "revenue": 1.0,
+    "arr": 1.0,
+    "mrr": 0.95,
+    "ebitda": 0.95,
+    "cash_position": 0.95,
+    "closing_cash": 0.95,
+    "opening_cash": 0.85,
+    "net_cash_flow": 0.85,
+    "net_profit": 0.9,
+    "gross_profit": 0.85,
+    "cogs": 0.8,
+    "opex": 0.8,
+    "ownership": 0.9,
+    "esop_pool": 0.7,
+    "valuation": 0.85,
+    "pre_money_valuation": 0.85,
+    "post_money_valuation": 0.85,
+    "round_size": 0.85,
+    "total_assets": 0.8,
+    "liabilities": 0.8,
+    "equity": 0.8,
+    "burn_rate": 0.8,
+    "cash_runway": 0.75,
+    "gross_margin": 0.8,
+    "ebitda_margin": 0.8,
+    "net_margin": 0.75,
+    "revenue_growth": 0.7,
+    "customer_base": 0.6,
+    "churn_rate": 0.55,
+    "cac": 0.5,
+    "ltv": 0.5,
+    "ltv_cac_ratio": 0.5,
+    "depreciation_amortization": 0.5,
+    "interest_expense": 0.5,
+    "tax_expense": 0.5,
+    "headcount": 0.35,
+    "revenue_per_employee": 0.3,
+    "tam": 0.2,
+    "_default": 0.5,
+    "note": "0..1. Scales materiality, so a 6% revenue gap outranks a 40% TAM gap automatically."
+  },
+
+  "favourable_direction": {
+    "revenue": "up",
+    "arr": "up",
+    "mrr": "up",
+    "gross_profit": "up",
+    "gross_margin": "up",
+    "ebitda": "up",
+    "ebitda_margin": "up",
+    "net_profit": "up",
+    "net_margin": "up",
+    "cash_position": "up",
+    "closing_cash": "up",
+    "cash_runway": "up",
+    "customer_base": "up",
+    "ltv": "up",
+    "ltv_cac_ratio": "up",
+    "revenue_growth": "up",
+    "valuation": "up",
+    "pre_money_valuation": "up",
+    "post_money_valuation": "up",
+    "tam": "up",
+    "ownership": "up",
+    "burn_rate": "down",
+    "churn_rate": "down",
+    "cac": "down",
+    "cogs": "down",
+    "opex": "down",
+    "liabilities": "down",
+    "note": "Which way does a number move to make the company look better to an investor."
+  },
+
+  "authority_tiers": {
+    "auditor_notes": 3,
+    "audited_financials": 3,
+    "financial_statements": 2,
+    "mis": 2,
+    "cap_table": 2,
+    "term_sheet": 2,
+    "kpi_dashboard": 1,
+    "projections": 1,
+    "pitch_deck": 1,
+    "teaser": 1,
+    "unknown": 1,
+    "note": "Higher tier = more trustworthy source. Direction multiplier only applies when tiers differ."
+  },
+
+  "deck_categories": ["pitch_deck", "teaser"],
+
+  "severity": {
+    "materiality": {
+      "floor": 0.4,
+      "span": 1.6,
+      "rel_weight": 0.6,
+      "abs_weight": 0.4,
+      "rel_saturation": 40,
+      "abs_anchor_fraction": 0.05,
+      "note": "materiality = floor + span * (rel_weight*rel + abs_weight*abs) * importance. Range 0.4..2.0."
+    },
+    "direction": {
+      "self_serving": 1.25,
+      "neutral": 1.0,
+      "conservative": 0.85
+    },
+    "corroboration": {
+      "isolated_outlier": 0.8,
+      "standoff": 1.15,
+      "single_source": 1.0,
+      "outlier_ratio_threshold": 0.34,
+      "note": "If the disagreeing sources are <=34% of all sources on the node it is an isolated outlier; otherwise a genuine standoff."
+    },
+    "confidence": {
+      "parse_quality": {
+        "xlsx_cell": 1.0,
+        "parsed_table": 0.9,
+        "prose": 0.75,
+        "ocr": 0.55,
+        "unknown": 0.75
+      },
+      "period_quality": {
+        "exact": 1.0,
+        "inferred": 0.8,
+        "relative": 0.6,
+        "unknown": 0.5
+      },
+      "fx_penalty": 0.9,
+      "unresolved_gate": 0.65,
+      "note": "unresolved_gate: below this combined confidence, a finding is demoted from an accusation to a question."
+    },
+    "cap": 100
+  },
+
+  "bands": {
+    "CRITICAL": 30,
+    "HIGH": 18,
+    "MEDIUM": 9,
+    "MINOR": 0
+  },
+
+  "classification": {
+    "unresolved_tolerance_multiplier": 2.0,
+    "note": "delta <= tolerance -> CONSISTENT. delta <= tolerance*multiplier -> UNRESOLVED_INCONSISTENCY. Above that -> VERIFIED_MISMATCH."
+  },
+
+  "pillars": {
+    "arithmetic_integrity": { "weight": 0.25, "rules": ["R2", "R3"], "label": "Arithmetic Integrity" },
+    "cross_doc_consistency": { "weight": 0.30, "rules": ["R1"], "label": "Cross-Document Consistency" },
+    "evidence_coverage": { "weight": 0.20, "rules": ["R5"], "label": "Evidence Coverage" },
+    "projection_credibility": { "weight": 0.15, "rules": ["R4", "R6"], "label": "Projection Credibility" },
+    "ownership_integrity": { "weight": 0.10, "rules": ["R7"], "label": "Ownership Integrity" }
+  },
+
+  "scoring": {
+    "saturation_k": 40,
+    "ceiling": {
+      "floor": 55,
+      "span": 45,
+      "evidence_weight": 0.6,
+      "doc_type_weight": 0.4,
+      "expected_doc_types": 5
+    },
+    "bands": {
+      "READY": 85,
+      "CONDITIONAL": 70,
+      "MATERIAL_GAPS": 50,
+      "HIGH_RISK": 0
+    },
+    "labels": {
+      "READY": "Ready for Investor Review",
+      "CONDITIONAL": "Conditional - Requires Clarification",
+      "MATERIAL_GAPS": "Material Gaps Identified",
+      "HIGH_RISK": "High Risk - Significant Issues Found"
+    }
+  },
+
+  "identities": [
+    {
+      "id": "gross_profit",
+      "type": "linear",
+      "expression": "revenue - cogs = gross_profit",
+      "terms": [["+", "revenue"], ["-", "cogs"]],
+      "result": "gross_profit",
+      "tolerance_pct": 0.5,
+      "unit": "currency"
+    },
+    {
+      "id": "ebitda",
+      "type": "linear",
+      "expression": "gross_profit - opex = ebitda",
+      "terms": [["+", "gross_profit"], ["-", "opex"]],
+      "result": "ebitda",
+      "tolerance_pct": 0.5,
+      "unit": "currency"
+    },
+    {
+      "id": "net_profit",
+      "type": "linear",
+      "expression": "ebitda - depreciation_amortization - interest_expense - tax_expense = net_profit",
+      "terms": [["+", "ebitda"], ["-", "depreciation_amortization"], ["-", "interest_expense"], ["-", "tax_expense"]],
+      "result": "net_profit",
+      "tolerance_pct": 0.5,
+      "unit": "currency"
+    },
+    {
+      "id": "balance_sheet",
+      "type": "linear",
+      "expression": "liabilities + equity = total_assets",
+      "terms": [["+", "liabilities"], ["+", "equity"]],
+      "result": "total_assets",
+      "tolerance_pct": 0.1,
+      "unit": "currency"
+    },
+    {
+      "id": "cash_flow",
+      "type": "linear",
+      "expression": "opening_cash + net_cash_flow = closing_cash",
+      "terms": [["+", "opening_cash"], ["+", "net_cash_flow"]],
+      "result": "closing_cash",
+      "tolerance_pct": 0.1,
+      "unit": "currency"
+    },
+    {
+      "id": "closing_cash_is_cash_position",
+      "type": "linear",
+      "expression": "cash_position = closing_cash",
+      "terms": [["+", "cash_position"]],
+      "result": "closing_cash",
+      "tolerance_pct": 1.0,
+      "unit": "currency",
+      "note": "Definitional, not arithmetic. A balance sheet says 'cash and cash equivalents' and an MIS says 'closing cash balance' - the same quantity under two names. They must be separate metric keys so the opening + flow = closing identity works, which means nothing would otherwise compare them across documents and a genuine mismatch would go unreported. This identity closes that gap."
+    },
+    {
+      "id": "post_money",
+      "type": "linear",
+      "expression": "pre_money_valuation + round_size = post_money_valuation",
+      "terms": [["+", "pre_money_valuation"], ["+", "round_size"]],
+      "result": "post_money_valuation",
+      "tolerance_pct": 0.5,
+      "unit": "currency"
+    },
+    {
+      "id": "gross_margin_pct",
+      "type": "ratio",
+      "expression": "gross_profit / revenue x 100 = gross_margin",
+      "numerator": "gross_profit",
+      "denominator": "revenue",
+      "scale": 100,
+      "result": "gross_margin",
+      "tolerance_abs": 0.2,
+      "unit": "pct"
+    },
+    {
+      "id": "ebitda_margin_pct",
+      "type": "ratio",
+      "expression": "ebitda / revenue x 100 = ebitda_margin",
+      "numerator": "ebitda",
+      "denominator": "revenue",
+      "scale": 100,
+      "result": "ebitda_margin",
+      "tolerance_abs": 0.2,
+      "unit": "pct"
+    },
+    {
+      "id": "net_margin_pct",
+      "type": "ratio",
+      "expression": "net_profit / revenue x 100 = net_margin",
+      "numerator": "net_profit",
+      "denominator": "revenue",
+      "scale": 100,
+      "result": "net_margin",
+      "tolerance_abs": 0.2,
+      "unit": "pct"
+    },
+    {
+      "id": "runway",
+      "type": "ratio",
+      "expression": "cash_position / burn_rate = cash_runway",
+      "numerator": "cash_position",
+      "denominator": "burn_rate",
+      "scale": 1,
+      "result": "cash_runway",
+      "tolerance_pct": 5.0,
+      "unit": "months"
+    },
+    {
+      "id": "ltv_cac",
+      "type": "ratio",
+      "expression": "ltv / cac = ltv_cac_ratio",
+      "numerator": "ltv",
+      "denominator": "cac",
+      "scale": 1,
+      "result": "ltv_cac_ratio",
+      "tolerance_pct": 2.0,
+      "unit": "ratio"
+    },
+    {
+      "id": "arr_from_mrr",
+      "type": "product",
+      "expression": "mrr x 12 = arr",
+      "operand": "mrr",
+      "factor": 12,
+      "result": "arr",
+      "tolerance_pct": 1.0,
+      "unit": "currency"
+    },
+    {
+      "id": "revenue_per_employee",
+      "type": "ratio",
+      "expression": "revenue / headcount = revenue_per_employee",
+      "numerator": "revenue",
+      "denominator": "headcount",
+      "scale": 1,
+      "result": "revenue_per_employee",
+      "tolerance_pct": 2.0,
+      "unit": "currency",
+      "derive_only": true,
+      "note": "Never reported as an R2 failure. Derived so R6 can sanity-check it."
+    }
+  ],
+
+  "rollups": [
+    {
+      "id": "monthly_to_annual",
+      "granularity_from": "month",
+      "granularity_to": "fy",
+      "metrics": ["revenue", "cogs", "opex", "net_cash_flow", "ebitda", "net_profit"],
+      "tolerance_pct": 0.5
+    },
+    {
+      "id": "quarterly_to_annual",
+      "granularity_from": "quarter",
+      "granularity_to": "fy",
+      "metrics": ["revenue", "cogs", "opex", "net_cash_flow", "ebitda", "net_profit"],
+      "tolerance_pct": 0.5
+    },
+    {
+      "id": "monthly_to_quarterly",
+      "granularity_from": "month",
+      "granularity_to": "quarter",
+      "metrics": ["revenue", "cogs", "opex", "net_cash_flow", "ebitda", "net_profit"],
+      "tolerance_pct": 0.5
+    }
+  ],
+
+  "temporal": {
+    "growth_ratio_threshold": 3.0,
+    "min_absolute_growth_pct": 50.0,
+    "margin_step_change_pp": 10.0,
+    "burn_drop_pct": 40.0,
+    "note": "UNCALIBRATED. No real document set was available; these are reasoned defaults, see deterministic_engine_plan.md section 12.3."
+  },
+
+  "plausibility_bands": {
+    "gross_margin": { "min": -100, "max": 100, "unit": "pct", "assumption": "Gross margin cannot exceed 100%." },
+    "ebitda_margin": { "min": -1000, "max": 100, "unit": "pct", "assumption": "EBITDA margin cannot exceed 100% of revenue." },
+    "net_margin": { "min": -1000, "max": 100, "unit": "pct", "assumption": "Net margin cannot exceed 100% of revenue." },
+    "churn_rate": { "min": 0, "max": 100, "unit": "pct", "assumption": "Churn is bounded 0-100%." },
+    "ownership": { "min": 0, "max": 100, "unit": "pct", "assumption": "A single holder cannot own more than 100%." },
+    "esop_pool": { "min": 0, "max": 100, "unit": "pct", "assumption": "ESOP pool is a percentage of the company." },
+    "headcount": { "min": 0, "max": 1000000, "unit": "count", "assumption": "Headcount cannot be negative." },
+    "customer_base": { "min": 0, "max": 10000000000, "unit": "count", "assumption": "Customer count cannot be negative." },
+    "ltv_cac_ratio": { "min": 0, "max": 20, "unit": "ratio", "assumption": "An LTV/CAC above 20 is almost always a unit error." },
+    "cash_runway": { "min": 0, "max": 120, "unit": "months", "assumption": "A runway above 120 months usually indicates a unit or scale error." },
+    "revenue_per_employee": { "min": 100000, "max": 100000000, "unit": "currency", "assumption": "Revenue per employee outside Rs 1L - Rs 10Cr suggests a scale error. UNCALIBRATED." },
+    "revenue_growth": { "min": -100, "max": 10000, "unit": "pct", "assumption": "Revenue cannot fall by more than 100%." }
+  },
+
+  "captable": {
+    "ownership_sum_target": 100,
+    "ownership_sum_tolerance_pp": 0.1
+  },
+
+  "coverage": {
+    "min_documents": 2,
+    "min_document_types": 2
+  }
+}

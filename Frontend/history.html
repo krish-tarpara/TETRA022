@@ -8,56 +8,187 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components/typography.css">
   <link rel="stylesheet" href="css/components/button.css">
-  <link rel="stylesheet" href="css/components/card.css">
-  <link rel="stylesheet" href="css/pages/history.css">
+  <link rel="stylesheet" href="css/components/loader.css">
+  <link rel="stylesheet" href="css/components/header.css">
+  <link rel="stylesheet" href="css/pages/dashboard.css">
+  <style>
+    :root {
+      --bg-gradient: #d8efe3;
+      --text-primary: #111827;
+      --text-secondary: #475569;
+      --white: #ffffff;
+      --dark-btn: #0B1C33;
+      --light-green-btn: #d5e9db;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #e3f2e8;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    .header-text {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0 0 1rem 0;
+      line-height: 1.2;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .main-card {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      border-top: 4px solid #0b4f36;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 4rem;
+    }
+    .btn-dark {
+      background: var(--dark-btn);
+      color: var(--white);
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      border: none;
+    }
+    
+    /* Keep history grid CSS */
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .history-card {
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.05);
+      background: #fdfdfd;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .history-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .history-date { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+    .history-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .status-complete { background: #eaf5ee; color: #0b4f36; }
+    .status-pending { background: #fdf6b2; color: #723b13; }
+    .status-error { background: #fde8e8; color: #9b1c1c; }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <header class="header-nav">
-      <div class="header-logo">
-        <div class="header-logo-icon">F</div>
-        <a href="index.html" class="header-logo-text">FinVerify AI</a>
-      </div>
-      <nav class="header-links" style="align-items: center;">
-        <a href="history.html" class="nav-btn active">History</a>
-        <a href="upload.html" class="nav-btn">New Analysis</a>
-      </nav>
-    </header>
+  <div class="page-header">
+    <div style="font-weight: 800; font-size: 1.1rem; color: #0b4f36; padding: 0 1rem; display: flex; align-items: center; margin-right: auto;">FinVerify</div>
+    <a href="index.html">Home</a>
+    <a href="upload.html">Upload</a>
+    <a href="history.html" class="active">History</a>
+    <a href="outcomes.html">Outcomes</a>
+    <a href="#" onclick="window.api.logout()">Logout</a>
+  </div>
 
-    <main class="main-content">
-      <div>
-        <header class="history-header">
-          <div>
-            <h1 class="h1" style="margin-bottom: 0.5rem;">Your Analysis History</h1>
-            <p class="text-secondary text-sm">Reports shown below are securely linked to your current browser session. <br/>These are not shared globally.</p>
+  <div class="header-text">
+    <h1>Your Analysis History</h1>
+    <p class="subtitle">Reports shown below are securely linked to your account.</p>
+  </div>
+
+  <div class="main-card">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
+      <button class="btn-dark" onclick="window.location.href='upload.html'">
+        <i data-lucide="plus" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i> New Analysis
+      </button>
+    </div>
+
+    <div id="loading-indicator">
+      <div class="loader-main">
+        <div class="up">
+          <div class="loaders">
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
+            <div class="loader"></div>
           </div>
-          <button class="btn-primary large" onclick="window.location.href='upload.html'">
-            <i data-lucide="plus" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i> New Analysis
-          </button>
-        </header>
-
-        <div id="loading-indicator" class="text-secondary text-center" style="padding: 4rem;">
-          <div class="animate-pulse" style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
-          Loading your history...
-        </div>
-        <div id="error-indicator" class="text-mismatch text-center card" style="display: none; padding: 2rem;"></div>
-
-        <div id="empty-state" class="card empty-state" style="display: none; background: rgba(0,0,0,0.02);">
-          <i data-lucide="folder-search" style="width: 48px; height: 48px; color: var(--text-muted); margin: 0 auto 1.5rem;"></i>
-          <h2 class="h2">No analyses yet</h2>
-          <p class="text-secondary" style="max-width: 300px; margin: 0 auto 2rem; line-height: 1.6;">Upload your first set of fundraising documents to generate a comprehensive due diligence report.</p>
-          <button class="btn-primary large" onclick="window.location.href='upload.html'">Run First Audit</button>
-        </div>
-
-        <div id="sessions-grid" class="sessions-grid">
-          <!-- Sessions will be injected here by JS -->
+          <div class="loadersB">
+            <div class="loaderA">
+              <div class="ball0"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball1"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball2"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball3"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball4"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball5"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball6"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball7"></div>
+            </div>
+            <div class="loaderA">
+              <div class="ball8"></div>
+            </div>
+          </div>
         </div>
       </div>
-    </main>
+      <div style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Loading your history...</div>
+    </div>
+    
+    <div id="error-indicator" style="display: none; padding: 2rem; color: #9b1c1c; text-align: center; background: #fde8e8; border-radius: 12px;"></div>
+
+    <div id="empty-state" style="display: none; background: rgba(0,0,0,0.02); text-align: center; padding: 3rem; border-radius: 12px;">
+      <i data-lucide="folder-search" style="width: 48px; height: 48px; color: #94a3b8; margin: 0 auto 1.5rem;"></i>
+      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">No analyses yet</h2>
+      <p style="color: #475569; max-width: 300px; margin: 0 auto 2rem; line-height: 1.6;">Upload your first set of fundraising documents to generate a comprehensive due diligence report.</p>
+      <button class="btn-dark" onclick="window.location.href='upload.html'">Run First Audit</button>
+    </div>
+
+    <div id="sessions-grid" class="sessions-grid">
+      <!-- Sessions will be injected here by JS -->
+    </div>
   </div>
 
   <script>lucide.createIcons();</script>

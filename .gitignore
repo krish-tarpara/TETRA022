@@ -3,3 +3,14 @@ node_modules/
 dist/
 uploads/
 .DS_Store
+
+# Local test artefacts
+server-run.log
+report.json
+r2.json
+r3.json
+rp.json
+adj.json
+obs.json
+out.pdf
+out.csv

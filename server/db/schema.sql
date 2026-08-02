@@ -83,10 +83,11 @@ CREATE TABLE IF NOT EXISTS discrepancies (
   details JSONB
 );
 
--- Indexes (using IF NOT EXISTS is not standard for CREATE INDEX in all PG versions, but we assume clean setup or manual execution)
-CREATE INDEX idx_sessions_user ON analysis_sessions(user_id);
-CREATE INDEX idx_docs_session ON documents(session_id);
-CREATE INDEX idx_metrics_session ON extracted_metrics(session_id);
-CREATE INDEX idx_metrics_normalized ON extracted_metrics(normalized_name, normalized_period);
-CREATE INDEX idx_discrepancies_session ON discrepancies(session_id);
-CREATE INDEX idx_discrepancies_class ON discrepancies(classification);
+-- Indexes. IF NOT EXISTS has been supported since PostgreSQL 9.5, and without it re-running this
+-- file against an existing database aborts on the first index that already exists.
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON analysis_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_docs_session ON documents(session_id);
+CREATE INDEX IF NOT EXISTS idx_metrics_session ON extracted_metrics(session_id);
+CREATE INDEX IF NOT EXISTS idx_metrics_normalized ON extracted_metrics(normalized_name, normalized_period);
+CREATE INDEX IF NOT EXISTS idx_discrepancies_session ON discrepancies(session_id);
+CREATE INDEX IF NOT EXISTS idx_discrepancies_class ON discrepancies(classification);

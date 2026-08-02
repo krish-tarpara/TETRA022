@@ -5,9 +5,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const sessionsGrid = document.getElementById('sessions-grid');
 
   const getScoreColor = (score) => {
-    if (score > 85) return 'var(--accent-success)';
-    if (score >= 60) return 'var(--color-inconsistency)';
-    return 'var(--color-mismatch)';
+    if (score >= 85) return '#059669';
+    if (score >= 70) return '#b45309';
+    if (score >= 50) return '#c2410c';
+    return '#dc2626';
+  };
+
+  const getBandClass = (band) => {
+    if (band === 'READY') return 'band-ready';
+    if (band === 'CONDITIONAL') return 'band-conditional';
+    if (band === 'MATERIAL_GAPS') return 'band-material-gaps';
+    return 'band-high-risk';
   };
 
   const renderSessions = (sessions) => {
@@ -21,32 +29,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     sessionsGrid.innerHTML = '';
     sessions.forEach(session => {
       const isComplete = session.status === 'complete';
-      const bgColor = isComplete ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)';
-      const textColor = isComplete ? 'var(--accent-success)' : 'var(--color-inconsistency)';
+      const scoreColor = getScoreColor(session.readiness_score || 0);
+      const bandLabel = session.label || (isComplete ? 'Complete' : session.status);
+      const bandClass = getBandClass(session.band);
       
       const card = document.createElement('div');
-      card.className = 'card interactive';
-      card.style.cursor = 'pointer';
+      card.className = 'history-card';
       card.onclick = () => window.location.href = `analysis.html?sessionId=${session.id}`;
       
       card.innerHTML = `
-        <div class="session-card-header">
-          <span class="session-card-date">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+          <span class="history-date">
             ${new Date(session.created_at).toLocaleString()}
           </span>
-          <span class="session-card-status" style="background-color: ${bgColor}; color: ${textColor}">
+          <span class="history-status status-${session.status}">
             ${session.status.toUpperCase()}
           </span>
         </div>
-        <div class="session-card-content">
-          <div class="session-score-circle" style="border-color: ${getScoreColor(session.readiness_score)}; color: ${getScoreColor(session.readiness_score)}">
-            ${session.readiness_score}
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid ${scoreColor}; color: ${scoreColor}; font-size: 1.2rem; font-weight: bold;">
+            ${session.readiness_score || 0}
           </div>
           <div>
-            <h3 class="h3 text-primary" style="margin: 0">Readiness Score</h3>
-            <p class="text-sm text-secondary" style="margin: 0.2rem 0 0">
-              ${session.total_mismatches} mismatches found
+            <h3 class="h3" style="margin: 0; color: var(--text-primary);">Readiness Score</h3>
+            <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-secondary);">
+              ${bandLabel}
             </p>
+            ${session.band ? `<span class="score-band-label ${bandClass}" style="margin-top: 0.25rem; font-size: 0.72rem;">${session.band.replace(/_/g, ' ')}</span>` : ''}
           </div>
         </div>
       `;
