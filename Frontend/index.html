@@ -3,93 +3,220 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FinVerify AI - Automated Due Diligence</title>
+  <title>FinVerify - Investor-Ready Narrative</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components/typography.css">
-  <link rel="stylesheet" href="css/components/button.css">
-  <link rel="stylesheet" href="css/components/card.css">
-  <link rel="stylesheet" href="css/pages/home.css">
+  <link rel="stylesheet" href="css/components/header.css">
+  <style>
+    :root {
+      --bg-gradient: #d8efe3;
+      --text-primary: #111827;
+      --text-secondary: #475569;
+      --white: #ffffff;
+      --dark-btn: #0B1C33;
+      --light-green-btn: #d5e9db;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #e3f2e8;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    .pill {
+      background: rgba(255, 255, 255, 0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+    .header-text {
+      text-align: center;
+      max-width: 800px;
+    }
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 0 0 1.5rem 0;
+      line-height: 1.2;
+    }
+    h1 span {
+      color: #5d7568;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 4rem;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-dark {
+      background: var(--dark-btn);
+      color: var(--white);
+    }
+    .btn-light {
+      background: var(--light-green-btn);
+      color: var(--text-primary);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .image-placeholder {
+      background: rgba(255, 255, 255, 0.5);
+      border: 2px solid rgba(255,255,255,0.8);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 3rem;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .image-placeholder img {
+      width: 100%;
+      border-radius: 8px;
+      opacity: 0.8;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 1000px;
+      width: 100%;
+      margin-top: 2rem;
+    }
+    .feature-card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .feature-icon {
+      background: #eaf5ee;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      color: #0b4f36;
+    }
+    .feature-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <header class="header-nav">
-      <div class="header-logo">
-        <div class="header-logo-icon">F</div>
-        <a href="index.html" class="header-logo-text">FinVerify AI</a>
-      </div>
-      <nav class="header-links" style="align-items: center;">
-        <a href="history.html" class="nav-btn">History</a>
-        <a href="upload.html" class="nav-btn">New Analysis</a>
-      </nav>
-    </header>
 
-    <main>
-      <section class="hero-section">
-        <div class="hero-content">
-          <div class="hero-badge">AI-Powered Financial Due Diligence</div>
-          <h1 class="hero-title">
-            Investors spend 40 hours auditing. <br/>
-            <span class="hero-title-highlight">We do it in 40 seconds.</span>
-          </h1>
-          <p class="hero-description">
-            Don't let mathematical inconsistencies kill your fundraise. FinVerify AI instantly cross-references your Pitch Deck, Financial Models, and Cap Tables to highlight discrepancies before investors see them.
-          </p>
-          <div class="hero-actions">
-            <button class="btn-primary large" onclick="window.location.href='upload.html'">
-              Start Free Analysis
-            </button>
-            <button class="btn-secondary large" onclick="window.location.href='history.html'">
-              View Past Reports
-            </button>
-          </div>
-
-        </div>
-      </section>
-
-      <section class="features-section" style="background: rgba(255, 255, 255, 0.4); border-top: 1px solid rgba(16, 185, 129, 0.2);">
-        <div class="main-content">
-          <h2 class="section-title" style="color: var(--text-primary);">The ROI of Automated Diligence</h2>
-          <p class="section-subtitle" style="color: var(--text-secondary);">
-            Stop wasting analyst hours manually hunting for spreadsheet discrepancies. Let our engine cross-reference models instantly.
-          </p>
-          
-          <div class="features-grid">
-            <div class="card feature-card interactive">
-              <div style="background: rgba(16, 185, 129, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                <i data-lucide="alert-triangle" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
-              </div>
-              <h3 class="h3" style="margin-bottom: 0.75rem;">The Problem</h3>
-              <p class="text-secondary text-sm" style="line-height: 1.6;">A single metric mismatch between your pitch deck and financial model can destroy investor trust. Manual reconciliation is incredibly slow, error-prone, and expensive.</p>
-            </div>
-            
-            <div class="card feature-card interactive">
-              <div style="background: rgba(16, 185, 129, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                <i data-lucide="cpu" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
-              </div>
-              <h3 class="h3" style="margin-bottom: 0.75rem;">Our Solution</h3>
-              <p class="text-secondary text-sm" style="line-height: 1.6;">Our AI engine ingests your entire data room and instantly cross-references all claims. It doesn't just match text—it mathematically verifies every underlying formula.</p>
-            </div>
-            
-            <div class="card feature-card interactive">
-              <div style="background: rgba(16, 185, 129, 0.1); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                <i data-lucide="trending-up" style="color: var(--accent-primary); width: 24px; height: 24px;"></i>
-              </div>
-              <h3 class="h3" style="margin-bottom: 0.75rem;">The Impact</h3>
-              <p class="text-secondary text-sm" style="line-height: 1.6;">Reduce 40 hours of manual diligence down to 40 seconds. Avoid costly auditor fees, eliminate post-term-sheet surprises, and close deals faster.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+  <div class="page-header">
+    <div style="font-weight: 800; font-size: 1.1rem; color: #0b4f36; padding: 0 1rem; display: flex; align-items: center; margin-right: auto;">FinVerify</div>
+    <a href="index.html" class="active">Home</a>
+    <a href="upload.html">Upload</a>
+    <a href="history.html">History</a>
+    <a href="outcomes.html">Outcomes</a>
+    <a href="#" onclick="window.api.logout()">Logout</a>
   </div>
-  
+
+  <div class="pill">
+    <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+    NEW: AI DISCREPANCY ENGINE 2.0
+  </div>
+
+  <div class="header-text">
+    <h1>Ensure Your Narrative is<br><span>Investor-Ready</span></h1>
+    <p class="subtitle">FinVerify uses advanced cross-document verification to ensure your pitch deck, financial models, and data room are perfectly aligned before you hit 'Send' to VCs.</p>
+    
+    <div class="btn-group">
+      <a href="login.html" class="btn btn-dark">Get Started</a>
+      <a href="outcomes.html" class="btn btn-light">View Expected Outcomes <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i></a>
+    </div>
+  </div>
+
+  <div class="image-placeholder">
+    <!-- Simplified placeholder to mimic the image -->
+    <div style="background: #e2f1e9; height: 300px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+       <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; gap: 2rem;">
+          <div>
+            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Business landing<br>page template</div>
+            <div style="width: 150px; height: 30px; background: #111827; border-radius: 20px;"></div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="width: 200px; height: 15px; background: #f0f0f0; border-radius: 4px;"></div>
+            <div style="width: 180px; height: 15px; background: #f0f0f0; border-radius: 4px;"></div>
+            <div style="width: 190px; height: 15px; background: #f0f0f0; border-radius: 4px;"></div>
+            <div style="width: 150px; height: 15px; background: #f0f0f0; border-radius: 4px;"></div>
+          </div>
+       </div>
+    </div>
+  </div>
+
+  <div class="header-text">
+    <div class="section-title">The Path to Funding Clarity</div>
+    <p class="subtitle" style="font-size: 1rem; margin-bottom: 0;">Upload your materials and let FinVerify handle the forensic analysis of your investment narrative.</p>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="file-lock-2"></i></div>
+      <div class="feature-title">Secure Upload</div>
+      <div class="feature-desc">Upload your Pitch Deck, Financial Model, and Cap Table. Our encrypted environment ensures your IP stays private.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="scan-line"></i></div>
+      <div class="feature-title">AI Verification</div>
+      <div class="feature-desc">Our LLM agents cross-reference numbers and claims across documents to identify conflicting data or narrative gaps.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="check-circle-2"></i></div>
+      <div class="feature-title">Readiness Score</div>
+      <div class="feature-desc">Receive a comprehensive report with a Readiness Score and a list of specific improvements needed for DD success.</div>
+    </div>
+  </div>
+
   <script src="js/api.js"></script>
-  <script src="js/moneyShower.js"></script>
   <script>
     lucide.createIcons();
   </script>

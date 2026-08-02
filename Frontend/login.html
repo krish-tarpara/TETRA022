@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinVerify - Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/components/header.css">
+  <style>
+    :root {
+      --bg-gradient: #d8efe3;
+      --text-primary: #111827;
+      --text-secondary: #475569;
+      --white: #ffffff;
+      --dark-btn: #0B1C33;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #e3f2e8;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    .header-text {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem 0;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+    .main-card {
+      background: #e3f2e8;
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 10px 10px 20px #c1cec5, -10px -10px 20px #ffffff;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      background: #e3f2e8;
+      box-shadow: inset 5px 5px 10px #c1cec5, inset -5px -5px 10px #ffffff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .form-group input:focus {
+      box-shadow: inset 8px 8px 16px #c1cec5, inset -8px -8px 16px #ffffff;
+    }
+    .btn-dark {
+      background: #e3f2e8;
+      color: #0b1c33;
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      display: block;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      box-shadow: 6px 6px 12px #c1cec5, -6px -6px 12px #ffffff;
+      transition: all 0.2s;
+      margin-top: 2rem;
+    }
+    .btn-dark:hover {
+      box-shadow: 8px 8px 16px #c1cec5, -8px -8px 16px #ffffff;
+      transform: translateY(-2px);
+    }
+    .btn-dark:active {
+      transform: translateY(0);
+      box-shadow: inset 4px 4px 8px #c1cec5, inset -4px -4px 8px #ffffff;
+    }
+    .switch-mode {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .switch-mode a {
+      color: #0b4f36;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-text">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Log in to securely access your deal room documents.</p>
+  </div>
+
+  <div class="main-card">
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Work Email</label>
+        <input type="email" id="email" required placeholder="name@company.com">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="••••••••">
+      </div>
+      <div id="name-group" class="form-group" style="display: none;">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="John Doe">
+      </div>
+      <div id="error-msg" style="color: #ef4444; font-size: 0.85rem; display: none;">Invalid credentials</div>
+      <button type="submit" class="btn-dark" id="submit-btn">Sign In to FinVerify</button>
+      
+      <div class="switch-mode">
+        <span id="switch-text">Don't have an account?</span> <a href="#" id="switch-link">Create one here</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    lucide.createIcons();
+
+    let isRegisterMode = false;
+
+    document.getElementById('switch-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      isRegisterMode = !isRegisterMode;
+      const nameGroup = document.getElementById('name-group');
+      const nameInput = document.getElementById('name');
+      const btn = document.getElementById('submit-btn');
+      const switchText = document.getElementById('switch-text');
+      const switchLink = document.getElementById('switch-link');
+      
+      if (isRegisterMode) {
+        nameGroup.style.display = 'block';
+        nameInput.required = true;
+        btn.textContent = 'Create Account';
+        switchText.textContent = 'Already have an account?';
+        switchLink.textContent = 'Sign in here';
+        document.querySelector('.header-text h1').textContent = 'Create Account';
+        document.querySelector('.header-text p').textContent = 'Sign up to securely access your deal room documents.';
+      } else {
+        nameGroup.style.display = 'none';
+        nameInput.required = false;
+        btn.textContent = 'Sign In to FinVerify';
+        switchText.textContent = 'Don\'t have an account?';
+        switchLink.textContent = 'Create one here';
+        document.querySelector('.header-text h1').textContent = 'Welcome Back';
+        document.querySelector('.header-text p').textContent = 'Log in to securely access your deal room documents.';
+      }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value;
+      const btn = document.getElementById('submit-btn');
+      const errorMsg = document.getElementById('error-msg');
+      
+      btn.textContent = isRegisterMode ? 'Creating Account...' : 'Authenticating...';
+      btn.disabled = true;
+      errorMsg.style.display = 'none';
+      
+      try {
+        const endpoint = isRegisterMode ? '/auth/register' : '/auth/login';
+        const body = isRegisterMode ? { email, password, name } : { email, password };
+        const res = await window.api.post(endpoint, JSON.stringify(body), {
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (res.token) {
+          localStorage.setItem('finverify_token', res.token);
+          window.location.href = 'index.html';
+        } else {
+          throw new Error('No token returned');
+        }
+      } catch (err) {
+        errorMsg.textContent = err.message || (isRegisterMode ? 'Registration failed.' : 'Login failed. Please check your credentials.');
+        errorMsg.style.display = 'block';
+        btn.textContent = isRegisterMode ? 'Create Account' : 'Sign In to FinVerify';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

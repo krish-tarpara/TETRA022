@@ -1,7 +1,7 @@
 // Replace hooks/useSocket.js
 
 class SocketClient {
-  constructor(onStatusUpdate, onComplete, onError, onWarning) {
+  constructor(onStatusUpdate, onComplete, onError, onWarning, onReportUpdated) {
     this.socket = null;
     this.status = null;
     this.progress = null;
@@ -12,24 +12,27 @@ class SocketClient {
     this.onComplete = onComplete;
     this.onError = onError;
     this.onWarning = onWarning;
+    this.onReportUpdated = onReportUpdated;
   }
 
   connect() {
     const token = localStorage.getItem('finverify_token');
     // Using global io object from CDN
-    this.socket = io('http://localhost:5000/analysis', {
+    this.socket = io('/analysis', {
       auth: { token }
     });
 
     this.socket.on('connect', () => {
       console.log('Socket connected');
-    });
-
-    this.socket.on('reconnect', () => {
+      // Always rejoin the room on connect/reconnect
       const currentSessionId = localStorage.getItem('currentSessionId');
       if (currentSessionId) {
         this.socket.emit('rejoin', { sessionId: currentSessionId });
       }
+    });
+
+    this.socket.on('report:updated', (data) => {
+      if (this.onReportUpdated) this.onReportUpdated(data);
     });
 
     this.socket.on('status:update', (data) => {

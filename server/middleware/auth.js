@@ -4,15 +4,27 @@ const db = require('../db/queries');
 const verifyToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Missing or invalid authorization header' });
+  let token = null;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else if (req.query.token) {
+    token = req.query.token;  // fallback for window.open export links
   }
 
-  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Missing or invalid authorization token' });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await db.getUserByToken(token);
+    
+    // Try ID-based lookup first (login users have their real DB id in the JWT)
+    let user = await db.getUserById(decoded.userId);
+    
+    // Fall back to token-based lookup (anonymous sessions store the full JWT in session_token)
+    if (!user) {
+      user = await db.getUserByToken(token);
+    }
     
     if (!user) {
       return res.status(401).json({ error: 'Invalid session' });
@@ -21,7 +33,7 @@ const verifyToken = async (req, res, next) => {
     // Update last active in background
     db.updateLastActive(user.id).catch(err => console.error('Failed to update last active', err));
 
-    req.user = { ...decoded, userId: user.id }; // Use DB user.id instead of JWT userId
+    req.user = { ...decoded, userId: user.id };
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Token expired or invalid' });

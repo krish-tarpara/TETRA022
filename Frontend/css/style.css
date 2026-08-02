@@ -19,6 +19,19 @@
   --color-inconsistency: #92400E;
   --color-missing: #075985;
   --color-unusual: #92400E;
+
+  /* Classification Colors */
+  --color-verified-mismatch: #dc2626;
+  --color-unresolved: #d97706;
+  --color-missing-info: #6366f1;
+  --color-unusual-assumption: #9333ea;
+  --color-verified-consistent: #16a34a;
+
+  /* Severity Bands */
+  --color-critical: #dc2626;
+  --color-high: #ea580c;
+  --color-medium: #d97706;
+  --color-minor: #65a30d;
   
   /* Typography */
   --text-heading: #111827; /* Dark Obsidian */

@@ -43,6 +43,30 @@ async function getUserByToken(sessionToken) {
   return result.rows[0];
 }
 
+async function getUserById(id) {
+  const result = await query(
+    'SELECT * FROM users WHERE id = $1',
+    [id]
+  );
+  return result.rows[0];
+}
+
+async function createUserWithEmail(email, passwordHash, displayName) {
+  const result = await query(
+    'INSERT INTO users (email, password_hash, display_name) VALUES ($1, $2, $3) RETURNING *',
+    [email, passwordHash, displayName]
+  );
+  return result.rows[0];
+}
+
+async function getUserByEmail(email) {
+  const result = await query(
+    'SELECT * FROM users WHERE email = $1',
+    [email]
+  );
+  return result.rows[0];
+}
+
 async function updateLastActive(userId) {
   await query(
     'UPDATE users SET last_active = NOW() WHERE id = $1',
@@ -438,6 +462,12 @@ async function updateSessionFxRates(sessionId, fxRates) {
 }
 
 module.exports = {
+<<<<<<< Updated upstream
+=======
+  getUserById,
+  createUserWithEmail,
+  getUserByEmail,
+>>>>>>> Stashed changes
   insertObservations,
   getSessionObservations,
   getSessionObservationsForEngine,

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcryptjs');
 const db = require('../db/queries');
 const { verifyToken } = require('../middleware/auth');
 
@@ -32,6 +33,54 @@ router.get('/verify', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Error verifying session:', error);
     res.status(500).json({ error: 'Failed to verify session' });
+  }
+});
+
+router.post('/register', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const existingUser = await db.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = await db.createUserWithEmail(email, passwordHash, name || '');
+    
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token, user: { id: user.id, display_name: user.display_name, email: user.email } });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Failed to register' });
+  }
+});
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    const user = await db.getUserByEmail(email);
+    if (!user || !user.password_hash) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password_hash);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token, user: { id: user.id, display_name: user.display_name, email: user.email } });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Failed to log in' });
   }
 });
 

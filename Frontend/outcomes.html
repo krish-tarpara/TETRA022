@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinVerify - Expected Outcomes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/components/header.css">
+  <style>
+    :root {
+      --bg-gradient: #d8efe3;
+      --text-primary: #111827;
+      --text-secondary: #475569;
+      --white: #ffffff;
+      --dark-btn: #0B1C33;
+      --light-green-btn: #d5e9db;
+    }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #e3f2e8;
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    .pill {
+      background: rgba(255, 255, 255, 0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+    .header-text {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0 0 1rem 0;
+      line-height: 1.2;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .outcomes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      max-width: 1000px;
+      width: 100%;
+      margin-bottom: 4rem;
+    }
+    .outcome-card {
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      border-top: 4px solid #0b4f36;
+    }
+    .outcome-icon {
+      background: #eaf5ee;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: #0b4f36;
+    }
+    .outcome-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .outcome-desc {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .btn-dark {
+      background: var(--dark-btn);
+      color: var(--white);
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      border: none;
+    }
+    @media (max-width: 768px) {
+      .outcomes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div style="font-weight: 800; font-size: 1.1rem; color: #0b4f36; padding: 0 1rem; display: flex; align-items: center; margin-right: auto;">FinVerify</div>
+    <a href="index.html">Home</a>
+    <a href="upload.html">Upload</a>
+    <a href="history.html">History</a>
+    <a href="outcomes.html" class="active">Outcomes</a>
+    <a href="#" onclick="window.api.logout()">Logout</a>
+  </div>
+
+  <div class="pill">
+    <i data-lucide="target" style="width: 14px; height: 14px;"></i>
+    EXPECTED OUTCOMES
+  </div>
+
+  <div class="header-text">
+    <h1>Comprehensive Audit Results</h1>
+    <p class="subtitle">Our objective is not to value the company or make an investment recommendation, but to determine whether the information provided by the company is complete, internally consistent, and ready for investor review.</p>
+  </div>
+
+  <div class="outcomes-grid">
+    <div class="outcome-card">
+      <div class="outcome-icon"><i data-lucide="git-merge" style="width: 28px; height: 28px;"></i></div>
+      <div class="outcome-title">Cross-Document Verification</div>
+      <div class="outcome-desc">Extract a defined set of financial and operational metrics and compare them across the pitch deck, financial statements, MIS, projections, and cap table.</div>
+    </div>
+    
+    <div class="outcome-card">
+      <div class="outcome-icon"><i data-lucide="alert-circle" style="width: 28px; height: 28px;"></i></div>
+      <div class="outcome-title">Discrepancy Identification</div>
+      <div class="outcome-desc">Flag conflicting numbers, unsupported claims, missing information, and unusual changes in assumptions.</div>
+    </div>
+    
+    <div class="outcome-card">
+      <div class="outcome-icon"><i data-lucide="file-bar-chart" style="width: 28px; height: 28px;"></i></div>
+      <div class="outcome-title">Readiness Reporting</div>
+      <div class="outcome-desc">Generate a source-linked inconsistency report, a list of specific follow-up questions, and a one-page fundraising readiness summary.</div>
+    </div>
+    
+    <div class="outcome-card">
+      <div class="outcome-icon"><i data-lucide="brain-circuit" style="width: 28px; height: 28px;"></i></div>
+      <div class="outcome-title">Classification Intelligence</div>
+      <div class="outcome-desc">Clearly distinguish between missing information, an unresolved inconsistency, and a verified mismatch.</div>
+    </div>
+  </div>
+
+  <a href="index.html" class="btn-dark">
+    <i data-lucide="arrow-left" style="width: 18px; height: 18px; margin-right: 0.5rem;"></i> Back to Home
+  </a>
+
+  <script src="js/api.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
